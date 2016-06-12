@@ -23,11 +23,12 @@ const readAnyOne = (...args) => {
   throw new Error('no any one usable');
 };
 
-const readUntilThrow = (transaction) => {
-  let receiver = [];
+const readUntilThrow = (transaction, key) => {
+  let receiver = key ? {} : [];
   while (true) {
     try {
-      receiver.push(transaction());
+      let result = transaction();
+      key ? receiver[result[key]] = result : receiver.push(result);
     } catch (reason) {
       return receiver;
     }
@@ -273,7 +274,7 @@ const readService = () => {
 
 const readServiceBlock = () => {
   readKeyword('{');
-  let receiver = readUntilThrow(readServiceItem);
+  let receiver = readUntilThrow(readServiceItem, 'name');
   readKeyword('}');
   return receiver;
 };
@@ -324,7 +325,15 @@ const readThrift = (() => {
       if (!storage[subject]) storage[subject] = {};
       delete block.subject;
       delete block.name;
-      storage[subject][name] = block;
+      switch (subject) {
+        case 'exception':
+        case 'service':
+        case 'struct':
+          storage[subject][name] = block.items;
+          break;
+        default:
+          storage[subject][name] = block;
+      }
     } catch(error) {
       break;
     }

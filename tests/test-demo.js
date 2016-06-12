@@ -28,4 +28,5 @@ service Service1 {
 
 `);
 
+// console.log(JSON.stringify(ast, null, 2));
 assert.deepEqual(ast, expection);

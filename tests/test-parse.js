@@ -4,6 +4,7 @@ const fs = require('fs');
 const expectoin = require("./test-parse.expection.json");
 
 fs.readFile('./test.thrift', (error, buffer) => {
-  let result = thriftParser(buffer);
-  assert.deepEqual(result, expectoin);
+  let ast = thriftParser(buffer);
+  // console.log(JSON.stringify(ast, null, 2));
+  assert.deepEqual(ast, expectoin);
 });

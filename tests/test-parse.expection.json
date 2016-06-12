@@ -44,208 +44,196 @@
     }
   },
   "struct": {
-    "Struct1": {
-      "items": [
-        {
-          "id": "1",
-          "option": "required",
-          "type": "int",
-          "name": "id"
-        },
-        {
-          "id": "2",
-          "option": "required",
-          "type": "bool",
-          "name": "field1"
-        },
-        {
-          "id": "4",
-          "option": "required",
-          "type": "i16",
-          "name": "field"
-        }
-      ]
-    },
-    "Struct2": {
-      "items": [
-        {
-          "id": "1",
-          "option": "required",
-          "type": "int",
-          "name": "id"
-        },
-        {
-          "id": "2",
-          "option": "required",
-          "type": "Json",
-          "name": "field1"
-        },
-        {
-          "id": "3",
-          "option": "required",
-          "type": "Mobile",
-          "name": "field2"
-        },
-        {
-          "id": "4",
-          "option": "required",
-          "type": "i16",
-          "name": "field3"
-        }
-      ]
-    }
+    "Struct1": [
+      {
+        "id": "1",
+        "option": "required",
+        "type": "int",
+        "name": "id"
+      },
+      {
+        "id": "2",
+        "option": "required",
+        "type": "bool",
+        "name": "field1"
+      },
+      {
+        "id": "4",
+        "option": "required",
+        "type": "i16",
+        "name": "field"
+      }
+    ],
+    "Struct2": [
+      {
+        "id": "1",
+        "option": "required",
+        "type": "int",
+        "name": "id"
+      },
+      {
+        "id": "2",
+        "option": "required",
+        "type": "Json",
+        "name": "field1"
+      },
+      {
+        "id": "3",
+        "option": "required",
+        "type": "Mobile",
+        "name": "field2"
+      },
+      {
+        "id": "4",
+        "option": "required",
+        "type": "i16",
+        "name": "field3"
+      }
+    ]
   },
   "exception": {
-    "Exception1": {
-      "items": [
-        {
-          "id": "1",
-          "option": "required",
-          "type": "i32",
-          "name": "error_code"
-        },
-        {
-          "id": "2",
-          "option": "required",
-          "type": "string",
-          "name": "error_name"
-        },
-        {
-          "id": "3",
-          "option": "optional",
-          "type": "string",
-          "name": "message"
-        }
-      ]
-    },
-    "Exception2": {
-      "items": [
-        {
-          "id": "1",
-          "option": "required",
-          "type": "i32",
-          "name": "error_code"
-        },
-        {
-          "id": "2",
-          "option": "required",
-          "type": "string",
-          "name": "error_name"
-        },
-        {
-          "id": "3",
-          "option": "optional",
-          "type": "string",
-          "name": "message"
-        }
-      ]
-    }
+    "Exception1": [
+      {
+        "id": "1",
+        "option": "required",
+        "type": "i32",
+        "name": "error_code"
+      },
+      {
+        "id": "2",
+        "option": "required",
+        "type": "string",
+        "name": "error_name"
+      },
+      {
+        "id": "3",
+        "option": "optional",
+        "type": "string",
+        "name": "message"
+      }
+    ],
+    "Exception2": [
+      {
+        "id": "1",
+        "option": "required",
+        "type": "i32",
+        "name": "error_code"
+      },
+      {
+        "id": "2",
+        "option": "required",
+        "type": "string",
+        "name": "error_name"
+      },
+      {
+        "id": "3",
+        "option": "optional",
+        "type": "string",
+        "name": "message"
+      }
+    ]
   },
   "service": {
     "Service1": {
-      "items": [
-        {
-          "type": "bool",
-          "name": "ping",
-          "args": [],
-          "throws": [
-            {
-              "id": "1",
-              "type": "Exception1",
-              "name": "user_exception"
-            },
-            {
-              "id": "2",
-              "type": "Exception2",
-              "name": "system_exception"
-            }
-          ]
-        },
-        {
-          "type": {
-            "name": "list",
-            "valueType": {
-              "name": "map",
-              "keyType": "Struct1",
-              "valueType": "Struct2"
-            }
+      "ping": {
+        "type": "bool",
+        "name": "ping",
+        "args": [],
+        "throws": [
+          {
+            "id": "1",
+            "type": "Exception1",
+            "name": "user_exception"
           },
-          "name": "test",
-          "args": [
-            {
-              "id": "1",
-              "type": "Struct1",
-              "name": "s1"
-            },
-            {
-              "id": "2",
-              "type": "Struct2",
-              "name": "s2"
-            }
-          ],
-          "throws": [
-            {
-              "id": "1",
-              "type": "Exception1",
-              "name": "user_exception"
-            },
-            {
-              "id": "2",
-              "type": "Exception2",
-              "name": "system_exception"
-            }
-          ]
-        }
-      ]
+          {
+            "id": "2",
+            "type": "Exception2",
+            "name": "system_exception"
+          }
+        ]
+      },
+      "test": {
+        "type": {
+          "name": "list",
+          "valueType": {
+            "name": "map",
+            "keyType": "Struct1",
+            "valueType": "Struct2"
+          }
+        },
+        "name": "test",
+        "args": [
+          {
+            "id": "1",
+            "type": "Struct1",
+            "name": "s1"
+          },
+          {
+            "id": "2",
+            "type": "Struct2",
+            "name": "s2"
+          }
+        ],
+        "throws": [
+          {
+            "id": "1",
+            "type": "Exception1",
+            "name": "user_exception"
+          },
+          {
+            "id": "2",
+            "type": "Exception2",
+            "name": "system_exception"
+          }
+        ]
+      }
     },
     "Service2": {
-      "items": [
-        {
-          "type": "bool",
-          "name": "ping",
-          "args": [],
-          "throws": [
-            {
-              "id": "1",
-              "type": "Exception1",
-              "name": "user_exception"
-            },
-            {
-              "id": "2",
-              "type": "Exception2",
-              "name": "system_exception"
-            }
-          ]
-        },
-        {
-          "type": "Json",
-          "name": "test",
-          "args": [
-            {
-              "id": "1",
-              "type": "Struct1",
-              "name": "s1"
-            },
-            {
-              "id": "2",
-              "type": "Struct2",
-              "name": "s2"
-            }
-          ],
-          "throws": [
-            {
-              "id": "1",
-              "type": "Exception1",
-              "name": "user_exception"
-            },
-            {
-              "id": "2",
-              "type": "Exception2",
-              "name": "system_exception"
-            }
-          ]
-        }
-      ]
+      "ping": {
+        "type": "bool",
+        "name": "ping",
+        "args": [],
+        "throws": [
+          {
+            "id": "1",
+            "type": "Exception1",
+            "name": "user_exception"
+          },
+          {
+            "id": "2",
+            "type": "Exception2",
+            "name": "system_exception"
+          }
+        ]
+      },
+      "test": {
+        "type": "Json",
+        "name": "test",
+        "args": [
+          {
+            "id": "1",
+            "type": "Struct1",
+            "name": "s1"
+          },
+          {
+            "id": "2",
+            "type": "Struct2",
+            "name": "s2"
+          }
+        ],
+        "throws": [
+          {
+            "id": "1",
+            "type": "Exception1",
+            "name": "user_exception"
+          },
+          {
+            "id": "2",
+            "type": "Exception2",
+            "name": "system_exception"
+          }
+        ]
+      }
     }
   }
 }

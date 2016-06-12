@@ -1,0 +1,53 @@
+<Thrift> := <Space>* <Subject>*
+
+
+<Space> := 0x10 | 0x13 | 0x20 | <Comment>
+
+<Comment> "/*" ... "*/" | "#" ... "\r\n"
+
+<Name> := \w+
+
+<Type> := <Name> | <Name> "<" <Type> ">" | <Name> "<" <Type> "," </Type> ">"
+
+<Value> := JSON
+
+<Id> := \d+
+
+
+<Subject> := <Const> | <Typedef> | <Enum> | <Struct> | <Exception> | <Service>
+
+<Const> := "const" <Space>* <Type> <Space>* <Name> <Space>* "=" <Space>* <Value> <Space>*
+
+<Typedef> := "typedef" <Space>* <Type> <Space>* <Name> <Space>*
+
+<Enum> := "enum" <Space>* <Name> <Space>* <Enum-Block> <Space>*
+
+<Struct> := "struct" <Space>* <Name> <Space>* <Struct-Block> <Space>*
+
+<Exception> := "exception" <Space>* <Name> <Space>* <Exception-Block> <Space>*
+
+<Service> := "service" <Space>* <Name> <Space>* <Service-Block> <Space>*
+
+
+<Enum-Block> := "{" <Space>* <Enum-Item>* "}"
+
+<Enum-Item> := <Name> <Space>* "=" <Space>* <Value> <Space>* "," <Space>*
+
+
+<Struct-Block> := "{" <Space>* <Struct-Item>* "}"
+
+<Struct-Item> := <Id> <Space>* ":" <Space>* <Struct-Option> <Space>* <Type> <Space>* <Name> <Space>* "," <Space>*
+
+<Struct-Option> := "required" | "optional"
+
+
+<Exception-Block> := "{" <Space>* <Struct-Item>* "}"
+
+
+<Service-Block> := "{" <Space>* <Service-Item>* "}"
+
+<Service-Item> := <Type> <Space>* <Name> <Space>* "(" <Space>* <Service-Args>* ")" <Space>* <Service-Throw> <Space>* "," <Space>*
+
+<Service-Arg> := <Id> <Space>* ":" <Space>* <Type> <Space>* <Name> <Space>* "," <Space>*
+
+<Service-Throw> := "throws" <Space>* "(" <Space>* <Service-Args>* ")"

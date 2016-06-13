@@ -219,18 +219,7 @@
         "type": "bool",
         "name": "ping",
         "args": [],
-        "throws": [
-          {
-            "id": "1",
-            "type": "Exception1",
-            "name": "user_exception"
-          },
-          {
-            "id": "2",
-            "type": "Exception2",
-            "name": "system_exception"
-          }
-        ]
+        "throws": []
       },
       "test": {
         "type": "Json",

@@ -321,6 +321,7 @@ const readServiceItem = () => {
   let name = readName();
   let args = readServiceArgs();
   let throws = readServiceThrow();
+  readComma();
   return { type, name, args, throws };
 };
 
@@ -341,12 +342,14 @@ const readServiceArgItem = () => {
   return { id, type, name };
 };
 
-const readServiceThrow = () => {
-  let subject = readKeyword('throws');
-  let args = readServiceArgs();
-  readComma();
-  return args;
-};
+const readServiceThrow = reading(() => {
+  try {
+    readKeyword('throws');
+    return readServiceArgs();
+  } catch (reason) {
+    return [];
+  }
+});
 
 const readSubject = () => {
   return readAnyOne(readTypedef, readConst, readEnum, readStruct, readException, readService, readNamespace);

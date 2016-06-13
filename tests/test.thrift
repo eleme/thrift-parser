@@ -75,7 +75,7 @@ service Service2 {
     /**
      * Base services
      */
-    bool ping() throws (1: Exception1 user_exception, 2: Exception2 system_exception)
+    bool ping(),
 
     /**
      * TEST

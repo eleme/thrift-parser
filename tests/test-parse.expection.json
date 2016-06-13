@@ -1,4 +1,9 @@
 {
+  "namespace": {
+    "php": {
+      "serviceName": "hehe"
+    }
+  },
   "typedef": {
     "Json": {
       "type": "string"
@@ -13,8 +18,29 @@
       "value": "123"
     },
     "C2": {
-      "type": "i16",
-      "value": "456"
+      "type": "string",
+      "value": "\"456\""
+    },
+    "C3": {
+      "type": {
+        "name": "map",
+        "keyType": "i32",
+        "valueType": "string"
+      },
+      "value": [
+        {
+          "key": "1",
+          "value": "'a'"
+        },
+        {
+          "key": "2",
+          "value": "'b'"
+        },
+        {
+          "key": "3",
+          "value": "'c'"
+        }
+      ]
     }
   },
   "enum": {

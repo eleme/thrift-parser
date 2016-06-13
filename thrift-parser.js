@@ -192,7 +192,37 @@ const readStringValue = reading(() => {
   }
 });
 
-const readValue = () => readAnyOne(readNumberValue, readStringValue, readBooleanValue);
+const readListValue = reading(() => {
+  readKeyword('[');
+  let list = readUntilThrow(reading(() => {
+    let value = readValue();
+    readComma();
+    return value;
+  }));
+  readKeyword(']');
+  return list;
+});
+
+const readMapValue = reading(() => {
+  readKeyword('{');
+  let list = readUntilThrow(reading(() => {
+    let key = readValue();
+    readKeyword(':');
+    let value = readValue();
+    readComma();
+    return { key, value };
+  }));
+  readKeyword('}');
+  return list;
+});
+
+const readValue = () => readAnyOne(
+  readNumberValue,
+  readStringValue,
+  readBooleanValue,
+  readListValue,
+  readMapValue
+);
 
 const readConst = () => {
   let subject = readKeyword('const');
@@ -272,6 +302,13 @@ const readService = () => {
   return { subject, name, items }; 
 };
 
+const readNamespace = () => {
+  let subject = readKeyword('namespace');
+  let name = readName();
+  let serviceName = readName().concat(...readUntilThrow(reading(() => readString('.') + readName())));
+  return { subject, name, serviceName }; 
+};
+
 const readServiceBlock = () => {
   readKeyword('{');
   let receiver = readUntilThrow(readServiceItem, 'name');
@@ -312,7 +349,7 @@ const readServiceThrow = () => {
 };
 
 const readSubject = () => {
-  return readAnyOne(readTypedef, readConst, readEnum, readStruct, readException, readService);
+  return readAnyOne(readTypedef, readConst, readEnum, readStruct, readException, readService, readNamespace);
 };
 
 const readThrift = (() => {

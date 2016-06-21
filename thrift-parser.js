@@ -62,7 +62,7 @@ const readCommentMultiple = reading(() => {
 });
 
 const readCommentSingle = reading(() => {
-  readString('#');
+  readAnyOne(() => readString('#'), () => readString('//'));
   while (true) {
     let byte = buffer[offset++];
     if (byte === 10 || byte === 13) {
@@ -87,7 +87,7 @@ const readSpace = reading(() => {
 });
 
 const readComma = () => {
-  if (buffer[offset] === 44) {
+  if (buffer[offset] === 44 || buffer[offset] === 59) { // , or ;
     offset++;
     readSpace();
     return ',';
@@ -277,7 +277,8 @@ const readStructBlock = () => {
 const readStructItem = () => {
   let id = readNumberValue();
   readKeyword(':');
-  let option = readOption();
+  let option;
+  try { option = readOption(); } catch (reason) {}
   let type = readType();
   let name = readName();
   readComma();
@@ -374,8 +375,10 @@ const readThrift = (() => {
         default:
           storage[subject][name] = block;
       }
-    } catch(error) {
-      break;
+    } catch (error) {
+      if (buffer.length === offset) break;
+      console.error(`[31m${buffer.slice(offset, offset + 50)}[0m`);
+      throw error;
     }
   }
   return storage;

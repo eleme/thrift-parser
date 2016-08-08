@@ -1,3 +1,10 @@
+class ThriftFileParsingError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'THRIFT_FILE_PARSING_ERROR';
+  }
+}
+
 /**/ module.exports = (buffer, offset = 0) => {
 
 buffer = new Buffer(buffer);
@@ -20,7 +27,7 @@ const readAnyOne = (...args) => {
       continue;
     }
   }
-  throw new Error('no any one usable');
+  throw new ThriftFileParsingError('Unexcepted Token');
 };
 
 const readUntilThrow = (transaction, key) => {
@@ -38,7 +45,7 @@ const readUntilThrow = (transaction, key) => {
 const readString = reading((string) => {
   for (let i = 0; i < string.length; i++) {
     if (buffer[offset++] !== string.charCodeAt(i)) {
-      throw new Error('readString(' + JSON.stringify(string) + ') Error');
+      throw new ThriftFileParsingError('readString(' + JSON.stringify(string) + ') Error');
     }
   }
   return string;
@@ -158,7 +165,7 @@ const readNumberValue = reading(() => {
         readSpace();
         return String.fromCharCode(...result);
       } else {
-        throw new Error('require a number');
+        throw new ThriftFileParsingError('require a number');
       }
     }
   }
@@ -186,7 +193,7 @@ const readStringValue = reading(() => {
       if (byte === 34 || byte === 39) {
         receiver.push(byte);
       } else {
-        throw new Error('require a quote');
+        throw new ThriftFileParsingError('require a quote');
       }
     }
   }
@@ -328,19 +335,10 @@ const readServiceItem = () => {
 
 const readServiceArgs = () => {
   readKeyword('(');
-  let receiver = readUntilThrow(readServiceArgItem);
+  let receiver = readUntilThrow(readStructItem);
   readKeyword(')');
   readSpace();
   return receiver;
-};
-
-const readServiceArgItem = () => {
-  let id = readNumberValue();
-  readKeyword(':');
-  let type = readType();
-  let name = readName();
-  readComma();
-  return { id, type, name };
 };
 
 const readServiceThrow = reading(() => {

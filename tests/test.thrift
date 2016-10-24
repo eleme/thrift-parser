@@ -12,7 +12,9 @@ typedef i64 Mobile
 const i16 C1 = 123
 const string C2 = "456"
 const list<i32> C3 = [ 1, 2, 3 ]
-const map<i32, string> C3 = { 1: 'a', 2: 'b', 3: 'c' }
+const map<i32, string> C4 = { 1: 'a', 2: 'b', 3: 'c' }
+const bool C5 = true
+const bool C6 = false
 
 /**
  * Enum

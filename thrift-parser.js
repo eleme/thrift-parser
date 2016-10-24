@@ -163,7 +163,7 @@ const readNumberValue = reading(() => {
     } else {
       if (result.length) {
         readSpace();
-        return String.fromCharCode(...result);
+        return +String.fromCharCode(...result);
       } else {
         throw new ThriftFileParsingError('require a number');
       }
@@ -171,18 +171,19 @@ const readNumberValue = reading(() => {
   }
 });
 
-const readBooleanValue = () => readAnyOne(() => readKeyword('true'), () => readKeyword('false'));
+const readBooleanValue = () => JSON.parse(readAnyOne(() => readKeyword('true'), () => readKeyword('false')));
 
 const readStringValue = reading(() => {
   let receiver = [];
+  let start;
   while(true) {
     let byte = buffer[offset++];
     if (receiver.length) {
-      if (byte === 34 || byte === 39) {
+      if (byte === start) { // " or '
         receiver.push(byte);
         readSpace();
-        return String.fromCharCode(...receiver);
-      } else if (byte === 92) {
+        return new Function('return ' + String.fromCharCode(...receiver))();
+      } else if (byte === 92) { // \
         receiver.push(byte);
         offset++;
         receiver.push(byte);
@@ -191,6 +192,7 @@ const readStringValue = reading(() => {
       }
     } else {
       if (byte === 34 || byte === 39) {
+        start = byte;
         receiver.push(byte);
       } else {
         throw new ThriftFileParsingError('require a quote');
@@ -288,8 +290,12 @@ const readStructItem = () => {
   try { option = readOption(); } catch (reason) {}
   let type = readType();
   let name = readName();
+  let defaultValue = readAssign();
   readComma();
-  return { id, option, type, name };
+  let result = { id, type, name };
+  if (option !== void 0) result.option = option;
+  if (defaultValue !== void 0) result.defaultValue = defaultValue;
+  return result;
 };
 
 const readOption = () => {

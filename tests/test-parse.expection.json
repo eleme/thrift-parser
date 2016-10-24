@@ -15,13 +15,24 @@
   "const": {
     "C1": {
       "type": "i16",
-      "value": "123"
+      "value": 123
     },
     "C2": {
       "type": "string",
-      "value": "\"456\""
+      "value": "456"
     },
     "C3": {
+      "type": {
+        "name": "list",
+        "valueType": "i32"
+      },
+      "value": [
+        1,
+        2,
+        3
+      ]
+    },
+    "C4": {
       "type": {
         "name": "map",
         "keyType": "i32",
@@ -29,18 +40,26 @@
       },
       "value": [
         {
-          "key": "1",
-          "value": "'a'"
+          "key": 1,
+          "value": "a"
         },
         {
-          "key": "2",
-          "value": "'b'"
+          "key": 2,
+          "value": "b"
         },
         {
-          "key": "3",
-          "value": "'c'"
+          "key": 3,
+          "value": "c"
         }
       ]
+    },
+    "C5": {
+      "type": "bool",
+      "value": true
+    },
+    "C6": {
+      "type": "bool",
+      "value": false
     }
   },
   "enum": {
@@ -48,11 +67,11 @@
       "items": [
         {
           "name": "TYPE_DISCOVER",
-          "value": "1"
+          "value": 1
         },
         {
           "name": "TYPE_NOTIFY",
-          "value": "2"
+          "value": 2
         }
       ]
     },
@@ -60,11 +79,11 @@
       "items": [
         {
           "name": "OPERATE_TYPE_MANUAL",
-          "value": "1"
+          "value": 1
         },
         {
           "name": "OPERATE_TYPE_AUTO",
-          "value": "2"
+          "value": 2
         }
       ]
     }
@@ -72,19 +91,19 @@
   "struct": {
     "Struct1": [
       {
-        "id": "1",
+        "id": 1,
         "option": "required",
         "type": "int",
         "name": "id"
       },
       {
-        "id": "2",
+        "id": 2,
         "option": "required",
         "type": "bool",
         "name": "field1"
       },
       {
-        "id": "4",
+        "id": 4,
         "option": "required",
         "type": "i16",
         "name": "field"
@@ -92,25 +111,25 @@
     ],
     "Struct2": [
       {
-        "id": "1",
+        "id": 1,
         "option": "required",
         "type": "int",
         "name": "id"
       },
       {
-        "id": "2",
+        "id": 2,
         "option": "required",
         "type": "Json",
         "name": "field1"
       },
       {
-        "id": "3",
+        "id": 3,
         "option": "required",
         "type": "Mobile",
         "name": "field2"
       },
       {
-        "id": "4",
+        "id": 4,
         "option": "required",
         "type": "i16",
         "name": "field3"
@@ -120,19 +139,19 @@
   "exception": {
     "Exception1": [
       {
-        "id": "1",
+        "id": 1,
         "option": "required",
         "type": "i32",
         "name": "error_code"
       },
       {
-        "id": "2",
+        "id": 2,
         "option": "required",
         "type": "string",
         "name": "error_name"
       },
       {
-        "id": "3",
+        "id": 3,
         "option": "optional",
         "type": "string",
         "name": "message"
@@ -140,19 +159,19 @@
     ],
     "Exception2": [
       {
-        "id": "1",
+        "id": 1,
         "option": "required",
         "type": "i32",
         "name": "error_code"
       },
       {
-        "id": "2",
+        "id": 2,
         "option": "required",
         "type": "string",
         "name": "error_name"
       },
       {
-        "id": "3",
+        "id": 3,
         "option": "optional",
         "type": "string",
         "name": "message"
@@ -167,12 +186,12 @@
         "args": [],
         "throws": [
           {
-            "id": "1",
+            "id": 1,
             "type": "Exception1",
             "name": "user_exception"
           },
           {
-            "id": "2",
+            "id": 2,
             "type": "Exception2",
             "name": "system_exception"
           }
@@ -190,24 +209,24 @@
         "name": "test",
         "args": [
           {
-            "id": "1",
+            "id": 1,
             "type": "Struct1",
             "name": "s1"
           },
           {
-            "id": "2",
+            "id": 2,
             "type": "Struct2",
             "name": "s2"
           }
         ],
         "throws": [
           {
-            "id": "1",
+            "id": 1,
             "type": "Exception1",
             "name": "user_exception"
           },
           {
-            "id": "2",
+            "id": 2,
             "type": "Exception2",
             "name": "system_exception"
           }
@@ -226,24 +245,24 @@
         "name": "test",
         "args": [
           {
-            "id": "1",
+            "id": 1,
             "type": "Struct1",
             "name": "s1"
           },
           {
-            "id": "2",
+            "id": 2,
             "type": "Struct2",
             "name": "s2"
           }
         ],
         "throws": [
           {
-            "id": "1",
+            "id": 1,
             "type": "Exception1",
             "name": "user_exception"
           },
           {
-            "id": "2",
+            "id": 2,
             "type": "Exception2",
             "name": "system_exception"
           }

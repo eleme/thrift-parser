@@ -80,7 +80,8 @@
             "type": "Exception2",
             "name": "system_exception"
           }
-        ]
+        ],
+        "oneway": false
       },
       "test": {
         "type": {
@@ -106,7 +107,9 @@
             "type": "Exception2",
             "name": "system_exception"
           }
-        ]
+        ],
+        "oneway": false
+
       }
     }
   }

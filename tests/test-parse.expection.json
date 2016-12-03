@@ -195,7 +195,8 @@
             "type": "Exception2",
             "name": "system_exception"
           }
-        ]
+        ],
+        "oneway": false
       },
       "test": {
         "type": {
@@ -230,7 +231,8 @@
             "type": "Exception2",
             "name": "system_exception"
           }
-        ]
+        ],
+        "oneway": false
       }
     },
     "Service2": {
@@ -238,7 +240,15 @@
         "type": "bool",
         "name": "ping",
         "args": [],
-        "throws": []
+        "throws": [],
+        "oneway": false
+      },
+      "foo": {
+        "type": "void",
+        "name": "foo",
+        "args": [],
+        "throws": [],
+        "oneway": true
       },
       "test": {
         "type": "Json",
@@ -266,7 +276,8 @@
             "type": "Exception2",
             "name": "system_exception"
           }
-        ]
+        ],
+        "oneway": false
       }
     }
   }

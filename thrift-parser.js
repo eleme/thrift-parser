@@ -331,12 +331,17 @@ const readServiceBlock = () => {
 };
 
 const readServiceItem = () => {
+  let oneway = false;
+  try {
+    readKeyword('oneway');
+    oneway = true;
+  } catch (error) { /* ignore */ }
   let type = readType();
   let name = readName();
   let args = readServiceArgs();
   let throws = readServiceThrow();
   readComma();
-  return { type, name, args, throws };
+  return { type, name, args, throws, oneway };
 };
 
 const readServiceArgs = () => {

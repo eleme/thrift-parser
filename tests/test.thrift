@@ -79,6 +79,8 @@ service Service2 {
      */
     bool ping(),
 
+    oneway void foo(),
+
     /**
      * TEST
      */

@@ -81,7 +81,7 @@ const readCommentSingle = reading(() => {
 const readSpace = reading(() => {
   while (true) {
     let byte = buffer[offset];
-    if (byte === 13 || byte === 10 || byte === 32) {
+    if (byte === 13 || byte === 10 || byte === 32 || byte === 9) {
       offset++;
     } else {
       try {

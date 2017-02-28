@@ -173,6 +173,16 @@ const readNumberValue = reading(() => {
 
 const readBooleanValue = () => JSON.parse(readAnyOne(() => readKeyword('true'), () => readKeyword('false')));
 
+const readRefValue = reading(() => {
+  let list = [ readName() ];
+  readUntilThrow(reading(() => {
+    readKeyword('.');
+    let name = readName();
+    list.push(name);
+  }));
+  return { '=': list };
+});
+
 const readStringValue = reading(() => {
   let receiver = [];
   let start;
@@ -230,7 +240,8 @@ const readValue = () => readAnyOne(
   readStringValue,
   readBooleanValue,
   readListValue,
-  readMapValue
+  readMapValue,
+  readRefValue
 );
 
 const readConst = () => {

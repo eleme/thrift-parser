@@ -9,89 +9,91 @@ class ThriftFileParsingError extends Error {
 
 buffer = new Buffer(buffer);
 
-const reading = (transaction) => (...args) => {
-  let beginning = offset;
-  try {
-    return transaction(...args);
-  } catch (reason) {
-    offset = beginning;
-    throw reason;
-  }
-};
-
 const readAnyOne = (...args) => {
-  for (let transaction of args) {
+  let beginning = offset;
+  for (let i = 0; i < args.length; i++) {
     try {
-      return transaction();
-    } catch(error) {
+      return args[i]();
+    } catch(ignore) {
+      offset = beginning;
       continue;
     }
   }
-  throw new ThriftFileParsingError('Unexcepted Token');
+  offset = beginning;
+  throw 'Unexcepted Token';
 };
 
 const readUntilThrow = (transaction, key) => {
   let receiver = key ? {} : [];
+  let beginning;
   while (true) {
     try {
+      beginning = offset;
       let result = transaction();
       key ? receiver[result[key]] = result : receiver.push(result);
-    } catch (reason) {
+    } catch (ignore) {
+      offset = beginning;
       return receiver;
     }
   }
 };
 
-const readString = reading((string) => {
-  for (let i = 0; i < string.length; i++) {
-    if (buffer[offset++] !== string.charCodeAt(i)) {
-      throw new ThriftFileParsingError('readString(' + JSON.stringify(string) + ') Error');
+const readKeyword = word => {
+  for (let i = 0; i < word.length; i++) {
+    if (buffer[offset + i] !== word.charCodeAt(i)) {
+      throw 'Unexpected token "' + word + '"';
     }
   }
-  return string;
-});
-
-const readKeyword = (word) => {
-  readString(word);
+  offset += word.length;
   readSpace();
   return word;
 };
 
-const readComment = () => readAnyOne(readCommentMultiple, readCommentSingle);
+const readCharCode = code => {
+  if (buffer[offset] !== code) throw 'Unexpected charCode';
+  offset++;
+  readSpace();
+  return code;
+};
 
-const readCommentMultiple = reading(() => {
-  readString('/*');
-  while (true) {
-    if (buffer[offset++] === 42 && buffer[offset] === 47) {
-      return offset++;
-    }
-  }
-});
+const readNoop = () => {};
 
-const readCommentSingle = reading(() => {
-  readAnyOne(() => readString('#'), () => readString('//'));
-  while (true) {
-    let byte = buffer[offset++];
-    if (byte === 10 || byte === 13) {
-      return true;
-    }
-  }
-});
+const readCommentMultiple = () => {
+  let i = 0;
+  if (buffer[offset + i++] !== 47 || buffer[offset + i++] !== 42) return false;
+  do {
+    while (buffer[offset + i++] !== 42);
+  } while (buffer[offset + i++] !== 47);
+  offset += i;
+  return true;
+};
 
-const readSpace = reading(() => {
+const readCommentSharp = () => {
+  let i = 0;
+  if (buffer[offset + i++] !== 35) return false;
+  while (buffer[offset + i] !== 10 && buffer[offset + i] !== 13) offset++;
+  offset += i;
+  return true;
+};
+
+const readCommentDoubleSlash = () => {
+  let i = 0;
+  if (buffer[offset + i++] !== 47 || buffer[offset + i++] !== 47) return false;
+  while (buffer[offset + i] !== 10 && buffer[offset + i] !== 13) offset++;
+  offset += i;
+  return true;
+};
+
+const readSpace = () => {
   while (true) {
     let byte = buffer[offset];
     if (byte === 13 || byte === 10 || byte === 32 || byte === 9) {
       offset++;
     } else {
-      try {
-        readComment();
-      } catch(reason) {
-        return true;
-      }
+      if (!readCommentMultiple() && !readCommentSharp() && !readCommentDoubleSlash()) return;
     }
   }
-});
+};
 
 const readComma = () => {
   if (buffer[offset] === 44 || buffer[offset] === 59) { // , or ;
@@ -110,50 +112,43 @@ const readTypedef = () => {
 
 const readType = () => readAnyOne(readTypeMap, readTypeList, readTypeNormal);
 
-const readTypeMap = reading(() => {
+const readTypeMap = () => {
   let name = readName();
-  readKeyword('<')
+  readCharCode(60); // <
   let keyType = readType();
   readComma();
   let valueType = readType();
-  readKeyword('>');
+  readCharCode(62); // >
   return { name, keyType, valueType };
-});
+};
 
-const readTypeList = reading(() => {
+const readTypeList = () => {
   let name = readName();
-  readKeyword('<')
+  readCharCode(60); // <
   let valueType = readType();
-  readKeyword('>')
+  readCharCode(62); // >
   return { name, valueType }
-});
+};
 
 const readTypeNormal = () => readName();
 
-const readName = reading(() => {
+const readName = () => {
+  let i = 0;
   let result = [];
-  while (true) {
-    let byte = buffer[offset];
-    if (
-      (byte >= 97 && byte <= 122) || // a-z
-      (byte >= 65 && byte <= 90) || // A-Z
-      (byte >= 48 && byte <= 57) || // 0-9
-      byte === 95
-    ) {
-      offset++;
-      result.push(byte);
-    } else {
-      if (result.length) {
-        readSpace();
-        return String.fromCharCode(...result);
-      } else {
-        throw void 0;
-      }
-    }
-  }
-});
+  let byte = buffer[offset];
+  while (
+    (byte >= 97 && byte <= 122) || // a-z
+    byte === 95 ||                 // _
+    (byte >= 65 && byte <= 90) ||  // A-Z
+    (byte >= 48 && byte <= 57)     // 0-9
+  ) byte = buffer[offset + ++i];
+  if (i === 0) throw 'Unexpected token';
+  let value = buffer.toString('utf8', offset, offset += i);
+  readSpace();
+  return value;
+};
 
-const readNumberValue = reading(() => {
+const readNumberValue = () => {
   let result = [];
   while (true) {
     let byte = buffer[offset]
@@ -165,25 +160,24 @@ const readNumberValue = reading(() => {
         readSpace();
         return +String.fromCharCode(...result);
       } else {
-        throw new ThriftFileParsingError('require a number');
+        throw 'Unexpected token ' + String.fromCharCode(byte);
       }
     }
   }
-});
+};
 
 const readBooleanValue = () => JSON.parse(readAnyOne(() => readKeyword('true'), () => readKeyword('false')));
 
-const readRefValue = reading(() => {
+const readRefValue = () => {
   let list = [ readName() ];
-  readUntilThrow(reading(() => {
-    readKeyword('.');
-    let name = readName();
-    list.push(name);
-  }));
+  readUntilThrow(() => {
+    readCharCode(46); // .
+    list.push(readName());
+  });
   return { '=': list };
-});
+};
 
-const readStringValue = reading(() => {
+const readStringValue = () => {
   let receiver = [];
   let start;
   while(true) {
@@ -196,7 +190,7 @@ const readStringValue = reading(() => {
       } else if (byte === 92) { // \
         receiver.push(byte);
         offset++;
-        receiver.push(byte);
+        receiver.push(buffer[offset++]);
       } else {
         receiver.push(byte);
       }
@@ -205,35 +199,35 @@ const readStringValue = reading(() => {
         start = byte;
         receiver.push(byte);
       } else {
-        throw new ThriftFileParsingError('require a quote');
+        throw 'Unexpected token ILLEGAL';
       }
     }
   }
-});
+};
 
-const readListValue = reading(() => {
-  readKeyword('[');
-  let list = readUntilThrow(reading(() => {
+const readListValue = () => {
+  readCharCode(91); // [
+  let list = readUntilThrow(() => {
     let value = readValue();
     readComma();
     return value;
-  }));
-  readKeyword(']');
+  });
+  readCharCode(93); // ]
   return list;
-});
+};
 
-const readMapValue = reading(() => {
-  readKeyword('{');
-  let list = readUntilThrow(reading(() => {
+const readMapValue = () => {
+  readCharCode(123); // {
+  let list = readUntilThrow(() => {
     let key = readValue();
-    readKeyword(':');
+    readCharCode(58); // :
     let value = readValue();
     readComma();
     return { key, value };
-  }));
-  readKeyword('}');
+  });
+  readCharCode(125); // }
   return list;
-});
+};
 
 const readValue = () => readAnyOne(
   readNumberValue,
@@ -260,9 +254,9 @@ const readEnum = () => {
 };
 
 const readEnumBlock = () => {
-  readKeyword('{');
+  readCharCode(123); // {
   let receiver = readUntilThrow(readEnumItem);
-  readKeyword('}');
+  readCharCode(125); // }
   return receiver;
 };
 
@@ -274,10 +268,13 @@ const readEnumItem = () => {
 };
 
 const readAssign = () => {
+  let beginning = offset;
   try {
-    readKeyword('=');
+    readCharCode(61); // =
     return readValue();
-  } catch (error) {}
+  } catch (ignore) {
+    offset = beginning;
+  }
 };
 
 const readStruct = () => {
@@ -288,17 +285,16 @@ const readStruct = () => {
 };
 
 const readStructBlock = () => {
-  readKeyword('{');
+  readCharCode(123); // {
   let receiver = readUntilThrow(readStructItem);
-  readKeyword('}');
+  readCharCode(125); // }
   return receiver;
 };
 
 const readStructItem = () => {
   let id = readNumberValue();
-  readKeyword(':');
-  let option;
-  try { option = readOption(); } catch (reason) {}
+  readCharCode(58); // :
+  let option = readAnyOne(() => readKeyword('required'), () => readKeyword('optional'), readNoop);
   let type = readType();
   let name = readName();
   let defaultValue = readAssign();
@@ -307,10 +303,6 @@ const readStructItem = () => {
   if (option !== void 0) result.option = option;
   if (defaultValue !== void 0) result.defaultValue = defaultValue;
   return result;
-};
-
-const readOption = () => {
-  return readAnyOne(() => readKeyword('required'), () => readKeyword('optional'));
 };
 
 const readException = () => {
@@ -330,23 +322,21 @@ const readService = () => {
 const readNamespace = () => {
   let subject = readKeyword('namespace');
   let name = readName();
-  let serviceName = readName().concat(...readUntilThrow(reading(() => readString('.') + readName())));
-  return { subject, name, serviceName }; 
+  let serviceName = readRefValue()['='].join('.');
+  return { subject, name, serviceName };
 };
 
 const readServiceBlock = () => {
-  readKeyword('{');
+  readCharCode(123); // {
   let receiver = readUntilThrow(readServiceItem, 'name');
-  readKeyword('}');
+  readCharCode(125); // }
   return receiver;
 };
 
+const readOneway = () => readKeyword('oneway');
+
 const readServiceItem = () => {
-  let oneway = false;
-  try {
-    readKeyword('oneway');
-    oneway = true;
-  } catch (error) { /* ignore */ }
+  let oneway = !!readAnyOne(readOneway, readNoop);
   let type = readType();
   let name = readName();
   let args = readServiceArgs();
@@ -356,27 +346,29 @@ const readServiceItem = () => {
 };
 
 const readServiceArgs = () => {
-  readKeyword('(');
+  readCharCode(40); // (
   let receiver = readUntilThrow(readStructItem);
-  readKeyword(')');
+  readCharCode(41); // )
   readSpace();
   return receiver;
 };
 
-const readServiceThrow = reading(() => {
+const readServiceThrow = () => {
+  let beginning = offset;
   try {
     readKeyword('throws');
     return readServiceArgs();
-  } catch (reason) {
+  } catch (ignore) {
+    offset = beginning;
     return [];
   }
-});
+};
 
 const readSubject = () => {
   return readAnyOne(readTypedef, readConst, readEnum, readStruct, readException, readService, readNamespace);
 };
 
-const readThrift = (() => {
+const readThrift = () => {
   readSpace();
   let storage = {};
   while (true) {
@@ -395,14 +387,15 @@ const readThrift = (() => {
         default:
           storage[subject][name] = block;
       }
-    } catch (error) {
-      if (buffer.length === offset) break;
+    } catch (message) {
       console.error(`[31m${buffer.slice(offset, offset + 50)}[0m`);
-      throw error;
+      throw new ThriftFileParsingError(message);
+    } finally {
+      if (buffer.length === offset) break;
     }
   }
   return storage;
-});
+};
 
 return readThrift();
 

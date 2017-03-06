@@ -1,15 +1,14 @@
 namespace php hehe
 
-/**
+/******
  * Types
- */
+ *****/
 typedef string Json
 typedef i64 Mobile
 
 /**
  * Const
- */
-const i16 C1 = 123
+ */const i16 C1 = 123
 const string C2 = "456"
 const list<i32> C3 = [ 1, 2, 3 ]
 const map<i32, string> C4 = { 1: 'a', 2: 'b', 3: 'c' }

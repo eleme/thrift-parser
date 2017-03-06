@@ -62,9 +62,9 @@ module.exports = (buffer, offset = 0) => {
     let i = 0;
     if (buffer[offset + i++] !== 47 || buffer[offset + i++] !== 42) return false;
     do {
-      while (buffer[offset + i++] !== 42);
-    } while (buffer[offset + i++] !== 47);
-    offset += i;
+      while (offset + i < buffer.length && buffer[offset + i++] !== 42);
+    } while (offset + i < buffer.length && buffer[offset + i] !== 47);
+    offset += i + 1;
     return true;
   };
 

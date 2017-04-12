@@ -74,6 +74,14 @@
         2,
         3
       ]
+    },
+    "C8": {
+      "type": "bool",
+      "value": true
+    },
+    "C9": {
+      "type": "bool",
+      "value": false
     }
   },
   "enum": {

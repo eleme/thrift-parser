@@ -260,6 +260,7 @@ module.exports = (buffer, offset = 0) => {
     let type = readType();
     let name = readName();
     let value = readAssign();
+    readComma();
     return { subject, type, name, value };
   };
 

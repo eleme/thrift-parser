@@ -183,6 +183,41 @@ module.exports = (buffer, offset = 0) => {
     }
   };
 
+  const readHexadecimalValue = () => {
+    let result = [];
+    if (buffer[offset] === 45) { // -
+      result.push(buffer[offset]);
+      offset++;
+    }
+
+    if (buffer[offset] !== 48) throw 'Unexpected token'; // 0
+    result.push(buffer[offset]);
+    offset++;
+
+    if (buffer[offset] !== 88 && buffer[offset] !== 120) throw 'Unexpected token'; // x or X
+    result.push(buffer[offset]);
+    offset++;
+
+    for (;;) {
+      let byte = buffer[offset];
+      if (
+        (byte >= 48 && byte <= 57) || // 0-9
+        (byte >= 65 && byte <= 70) || // A-F
+        (byte >= 97 && byte <= 102)   // a-f
+      ) {
+        offset++;
+        result.push(byte);
+      } else {
+        if (result.length) {
+          readSpace();
+          return +String.fromCharCode(...result);
+        } else {
+          throw 'Unexpected token ' + String.fromCharCode(byte);
+        }
+      }
+    }
+  };
+
   const readBooleanValue = () => JSON.parse(readAnyOne(() => readKeyword('true'), () => readKeyword('false')));
 
   const readRefValue = () => {
@@ -247,6 +282,7 @@ module.exports = (buffer, offset = 0) => {
   };
 
   const readValue = () => readAnyOne(
+    readHexadecimalValue, // This coming before readNumberValue is important, unfortunately
     readNumberValue,
     readStringValue,
     readBooleanValue,

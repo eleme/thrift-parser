@@ -82,6 +82,14 @@
     "C9": {
       "type": "bool",
       "value": false
+    },
+    "C10": {
+      "type": "i16",
+      "value": 32767
+    },
+    "C11": {
+      "type": "i32",
+      "value": 2147483647
     }
   },
   "enum": {

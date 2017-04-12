@@ -18,6 +18,8 @@ const bool C6 = false
 const set<i32> C7 = [ 1, 2, 3 ]
 const bool C8 = true;
 const bool C9 = false,
+const i16 C10 = 0x7fff
+const i32 C11 = 0x7fffffff
 
 /**
  * Enum

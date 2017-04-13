@@ -1,4 +1,4 @@
-for js in $(find $(dirname $0) -name '*.js')
+for js in $(find $(dirname $0) -name 'test-*.js')
 do
   if node $js
   then echo "[32;1m[Done][0m [0;1m$js[0m"

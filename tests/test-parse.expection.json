@@ -2,6 +2,9 @@
   "namespace": {
     "php": {
       "serviceName": "hehe"
+    },
+    "*": {
+      "serviceName": "haha"
     }
   },
   "typedef": {

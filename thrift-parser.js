@@ -148,6 +148,23 @@ module.exports = (buffer, offset = 0) => {
     return value;
   };
 
+  const readScope = () => {
+    let i = 0;
+    let result = [];
+    let byte = buffer[offset];
+    while (
+      (byte >= 97 && byte <= 122) || // a-z
+      byte === 95 ||                 // _
+      (byte >= 65 && byte <= 90) ||  // A-Z
+      (byte >= 48 && byte <= 57) ||  // 0-9
+      (byte === 42)                  // *
+    ) byte = buffer[offset + ++i];
+    if (i === 0) throw 'Unexpected token';
+    let value = buffer.toString('utf8', offset, offset += i);
+    readSpace();
+    return value;
+  };
+
   const readNumberValue = () => {
     let result = [];
     for (;;) {
@@ -321,7 +338,7 @@ module.exports = (buffer, offset = 0) => {
 
   const readNamespace = () => {
     let subject = readKeyword('namespace');
-    let name = readName();
+    let name = readScope();
     let serviceName = readRefValue()['='].join('.');
     return { subject, name, serviceName };
   };

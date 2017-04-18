@@ -1,4 +1,5 @@
 namespace php hehe
+namespace * haha
 
 /******
  * Types

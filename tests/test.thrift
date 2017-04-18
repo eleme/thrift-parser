@@ -14,6 +14,7 @@ const list<i32> C3 = [ 1, 2, 3 ]
 const map<i32, string> C4 = { 1: 'a', 2: 'b', 3: 'c' }
 const bool C5 = true
 const bool C6 = false
+const set<i32> C7 = [ 1, 2, 3 ]
 
 /**
  * Enum
@@ -66,6 +67,8 @@ service Service1 {
      * TEST
      */
     list<map<Struct1, Struct2>> test(1: Struct1 s1, 2: Struct2 s2)
+      throws (1: Exception1 user_exception, 2: Exception2 system_exception)
+    list<set<Struct1>> test2(1: Struct1 s1)
       throws (1: Exception1 user_exception, 2: Exception2 system_exception)
 }
 

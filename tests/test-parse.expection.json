@@ -60,6 +60,17 @@
     "C6": {
       "type": "bool",
       "value": false
+    },
+    "C7": {
+      "type": {
+        "name": "set",
+        "valueType": "i32"
+      },
+      "value": [
+        1,
+        2,
+        3
+      ]
     }
   },
   "enum": {
@@ -218,6 +229,36 @@
             "id": 2,
             "type": "Struct2",
             "name": "s2"
+          }
+        ],
+        "throws": [
+          {
+            "id": 1,
+            "type": "Exception1",
+            "name": "user_exception"
+          },
+          {
+            "id": 2,
+            "type": "Exception2",
+            "name": "system_exception"
+          }
+        ],
+        "oneway": false
+      },
+      "test2": {
+        "type": {
+          "name": "list",
+          "valueType": {
+            "name": "set",
+            "valueType": "Struct1"
+          }
+        },
+        "name": "test2",
+        "args": [
+          {
+            "id": 1,
+            "type": "Struct1",
+            "name": "s1"
           }
         ],
         "throws": [

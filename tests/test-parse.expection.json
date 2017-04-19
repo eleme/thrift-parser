@@ -2,6 +2,9 @@
   "namespace": {
     "php": {
       "serviceName": "hehe"
+    },
+    "*": {
+      "serviceName": "haha"
     }
   },
   "typedef": {
@@ -60,6 +63,33 @@
     "C6": {
       "type": "bool",
       "value": false
+    },
+    "C7": {
+      "type": {
+        "name": "set",
+        "valueType": "i32"
+      },
+      "value": [
+        1,
+        2,
+        3
+      ]
+    },
+    "C8": {
+      "type": "bool",
+      "value": true
+    },
+    "C9": {
+      "type": "bool",
+      "value": false
+    },
+    "C10": {
+      "type": "i16",
+      "value": 32767
+    },
+    "C11": {
+      "type": "i32",
+      "value": 2147483647
     }
   },
   "enum": {
@@ -218,6 +248,36 @@
             "id": 2,
             "type": "Struct2",
             "name": "s2"
+          }
+        ],
+        "throws": [
+          {
+            "id": 1,
+            "type": "Exception1",
+            "name": "user_exception"
+          },
+          {
+            "id": 2,
+            "type": "Exception2",
+            "name": "system_exception"
+          }
+        ],
+        "oneway": false
+      },
+      "test2": {
+        "type": {
+          "name": "list",
+          "valueType": {
+            "name": "set",
+            "valueType": "Struct1"
+          }
+        },
+        "name": "test2",
+        "args": [
+          {
+            "id": 1,
+            "type": "Struct1",
+            "name": "s1"
           }
         ],
         "throws": [

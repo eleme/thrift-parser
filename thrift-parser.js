@@ -1,5 +1,7 @@
+const path = require('path');
+
 class ThriftFileParsingError extends Error {
-  constructor(message) {
+  constructor (message) {
     super(message);
     this.name = 'THRIFT_FILE_PARSING_ERROR';
   }
@@ -26,7 +28,7 @@ module.exports = (buffer, offset = 0) => {
   const readUntilThrow = (transaction, key) => {
     let receiver = key ? {} : [];
     let beginning;
-    for (;;) {
+    for (; ;) {
       try {
         beginning = offset;
         let result = transaction();
@@ -49,7 +51,7 @@ module.exports = (buffer, offset = 0) => {
     return word;
   };
 
-  const readCharCode = code => {
+  const readCharCode = (code) => {
     if (buffer[offset] !== code) throw 'Unexpected charCode';
     offset++;
     readSpace();
@@ -62,7 +64,7 @@ module.exports = (buffer, offset = 0) => {
     let i = 0;
     if (buffer[offset + i++] !== 47 || buffer[offset + i++] !== 42) return false;
     do {
-      while (offset + i < buffer.length && buffer[offset + i++] !== 42);
+      while (offset + i < buffer.length && buffer[offset + i++] !== 42) {}
     } while (offset + i < buffer.length && buffer[offset + i] !== 47);
     offset += i + 1;
     return true;
@@ -85,7 +87,7 @@ module.exports = (buffer, offset = 0) => {
   };
 
   const readSpace = () => {
-    for (;;) {
+    for (; ;) {
       let byte = buffer[offset];
       if (byte === 13 || byte === 10 || byte === 32 || byte === 9) {
         offset++;
@@ -107,7 +109,7 @@ module.exports = (buffer, offset = 0) => {
     let subject = readKeyword('typedef');
     let type = readType();
     let name = readName();
-    return { subject, type, name };
+    return {subject, type, name};
   };
 
   const readType = () => readAnyOne(readTypeMap, readTypeList, readTypeNormal);
@@ -119,7 +121,7 @@ module.exports = (buffer, offset = 0) => {
     readComma();
     let valueType = readType();
     readCharCode(62); // >
-    return { name, keyType, valueType };
+    return {name, keyType, valueType};
   };
 
   const readTypeList = () => {
@@ -127,7 +129,7 @@ module.exports = (buffer, offset = 0) => {
     readCharCode(60); // <
     let valueType = readType();
     readCharCode(62); // >
-    return { name, valueType };
+    return {name, valueType};
   };
 
   const readTypeNormal = () => readName();
@@ -137,11 +139,12 @@ module.exports = (buffer, offset = 0) => {
     let result = [];
     let byte = buffer[offset];
     while (
-      (byte >= 97 && byte <= 122) || // a-z
-      byte === 95 ||                 // _
-      (byte >= 65 && byte <= 90) ||  // A-Z
-      (byte >= 48 && byte <= 57)     // 0-9
-    ) byte = buffer[offset + ++i];
+    (byte >= 97 && byte <= 122) || // a-z
+    byte === 46 ||                 // .
+    byte === 95 ||                 // _
+    (byte >= 65 && byte <= 90) ||  // A-Z
+    (byte >= 48 && byte <= 57)     // 0-9
+      ) byte = buffer[offset + ++i];
     if (i === 0) throw 'Unexpected token';
     let value = buffer.toString('utf8', offset, offset += i);
     readSpace();
@@ -153,12 +156,12 @@ module.exports = (buffer, offset = 0) => {
     let result = [];
     let byte = buffer[offset];
     while (
-      (byte >= 97 && byte <= 122) || // a-z
-      byte === 95 ||                 // _
-      (byte >= 65 && byte <= 90) ||  // A-Z
-      (byte >= 48 && byte <= 57) ||  // 0-9
-      (byte === 42)                  // *
-    ) byte = buffer[offset + ++i];
+    (byte >= 97 && byte <= 122) || // a-z
+    byte === 95 ||                 // _
+    (byte >= 65 && byte <= 90) ||  // A-Z
+    (byte >= 48 && byte <= 57) ||  // 0-9
+    (byte === 42)                  // *
+      ) byte = buffer[offset + ++i];
     if (i === 0) throw 'Unexpected token';
     let value = buffer.toString('utf8', offset, offset += i);
     readSpace();
@@ -167,7 +170,7 @@ module.exports = (buffer, offset = 0) => {
 
   const readNumberValue = () => {
     let result = [];
-    for (;;) {
+    for (; ;) {
       let byte = buffer[offset];
       if ((byte >= 48 && byte <= 57) || byte === 45 || byte === 46) {
         offset++;
@@ -198,7 +201,7 @@ module.exports = (buffer, offset = 0) => {
     result.push(buffer[offset]);
     offset++;
 
-    for (;;) {
+    for (; ;) {
       let byte = buffer[offset];
       if (
         (byte >= 48 && byte <= 57) || // 0-9
@@ -221,18 +224,18 @@ module.exports = (buffer, offset = 0) => {
   const readBooleanValue = () => JSON.parse(readAnyOne(() => readKeyword('true'), () => readKeyword('false')));
 
   const readRefValue = () => {
-    let list = [ readName() ];
+    let list = [readName()];
     readUntilThrow(() => {
       readCharCode(46); // .
       list.push(readName());
     });
-    return { '=': list };
+    return {'=': list};
   };
 
   const readStringValue = () => {
     let receiver = [];
     let start;
-    for (;;) {
+    for (; ;) {
       let byte = buffer[offset++];
       if (receiver.length) {
         if (byte === start) { // " or '
@@ -275,7 +278,7 @@ module.exports = (buffer, offset = 0) => {
       readCharCode(58); // :
       let value = readValue();
       readComma();
-      return { key, value };
+      return {key, value};
     });
     readCharCode(125); // }
     return list;
@@ -297,14 +300,14 @@ module.exports = (buffer, offset = 0) => {
     let name = readName();
     let value = readAssign();
     readComma();
-    return { subject, type, name, value };
+    return {subject, type, name, value};
   };
 
   const readEnum = () => {
     let subject = readKeyword('enum');
     let name = readName();
     let items = readEnumBlock();
-    return { subject, name, items };
+    return {subject, name, items};
   };
 
   const readEnumBlock = () => {
@@ -318,7 +321,7 @@ module.exports = (buffer, offset = 0) => {
     let name = readName();
     let value = readAssign();
     readComma();
-    return { name, value };
+    return {name, value};
   };
 
   const readAssign = () => {
@@ -335,7 +338,7 @@ module.exports = (buffer, offset = 0) => {
     let subject = readKeyword('struct');
     let name = readName();
     let items = readStructBlock();
-    return { subject, name, items };
+    return {subject, name, items};
   };
 
   const readStructBlock = () => {
@@ -346,14 +349,21 @@ module.exports = (buffer, offset = 0) => {
   };
 
   const readStructItem = () => {
-    let id = readNumberValue();
-    readCharCode(58); // :
+    let id;
+    try {
+      id = readNumberValue();
+      readCharCode(58); // :
+    }
+    catch (err) {
+
+    }
+
     let option = readAnyOne(() => readKeyword('required'), () => readKeyword('optional'), readNoop);
     let type = readType();
     let name = readName();
     let defaultValue = readAssign();
     readComma();
-    let result = { id, type, name };
+    let result = {id, type, name};
     if (option !== void 0) result.option = option;
     if (defaultValue !== void 0) result.defaultValue = defaultValue;
     return result;
@@ -363,21 +373,49 @@ module.exports = (buffer, offset = 0) => {
     let subject = readKeyword('exception');
     let name = readName();
     let items = readStructBlock();
-    return { subject, name, items };
+    return {subject, name, items};
   };
 
   const readService = () => {
     let subject = readKeyword('service');
     let name = readName();
     let items = readServiceBlock();
-    return { subject, name, items }; 
+    return {subject, name, items};
   };
 
   const readNamespace = () => {
     let subject = readKeyword('namespace');
     let name = readScope();
     let serviceName = readRefValue()['='].join('.');
-    return { subject, name, serviceName };
+    return {subject, name, serviceName};
+  };
+
+  const readInclude = () => {
+    let subject = readKeyword('include');
+    readSpace();
+    let includePath = readQuotation();
+    let name = path.basename(includePath, '.thrift');
+    readSpace();
+    return {subject, name, path: includePath};
+  };
+
+  const readQuotation = () => {
+    if (buffer[offset] === 34 || buffer[offset] === 39) {
+      offset++;
+    } else {
+      throw 'include error';
+    }
+    let i = offset;
+    while (buffer[i] !== 34 && buffer[i] !== 39) {
+      i++;
+    }
+    if (buffer[i] === 34 || buffer[i] === 39) {
+      let value = buffer.toString('utf8', offset, i);
+      offset = i + 1;
+      return value;
+    } else {
+      throw 'include error';
+    }
   };
 
   const readServiceBlock = () => {
@@ -396,7 +434,7 @@ module.exports = (buffer, offset = 0) => {
     let args = readServiceArgs();
     let throws = readServiceThrow();
     readComma();
-    return { type, name, args, throws, oneway };
+    return {type, name, args, throws, oneway};
   };
 
   const readServiceArgs = () => {
@@ -419,16 +457,16 @@ module.exports = (buffer, offset = 0) => {
   };
 
   const readSubject = () => {
-    return readAnyOne(readTypedef, readConst, readEnum, readStruct, readException, readService, readNamespace);
+    return readAnyOne(readTypedef, readConst, readEnum, readStruct, readException, readService, readNamespace, readInclude);
   };
 
   const readThrift = () => {
     readSpace();
     let storage = {};
-    for (;;) {
+    for (; ;) {
       try {
         let block = readSubject();
-        let { subject, name } = block;
+        let {subject, name} = block;
         if (!storage[subject]) storage[subject] = {};
         delete block.subject;
         delete block.name;
@@ -442,7 +480,7 @@ module.exports = (buffer, offset = 0) => {
             storage[subject][name] = block;
         }
       } catch (message) {
-        console.error(`[31m${buffer.slice(offset, offset + 50)}[0m`); // eslint-disable-line
+        console.error(`[31m${buffer.slice(offset, offset + 50)}[0m`) // eslint-disable-line
         throw new ThriftFileParsingError(message);
       } finally {
         if (buffer.length === offset) break;

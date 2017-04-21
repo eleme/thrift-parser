@@ -404,6 +404,34 @@ module.exports = (buffer, offset = 0) => {
     return result;
   };
 
+  const readUnion = () => {
+    let subject = readKeyword('union');
+    let name = readName();
+    let items = readUnionBlock();
+    return { subject, name, items };
+  };
+
+  const readUnionBlock = () => {
+    readCharCode(123); // {
+    let receiver = readUntilThrow(readUnionItem);
+    readCharCode(125); // }
+    return receiver;
+  };
+
+  const readUnionItem = () => {
+    let id = readNumberValue();
+    readCharCode(58); // :
+    // Read the keyword but drop it
+    readAnyOne(() => readKeyword('required'), () => readKeyword('optional'), readNoop);
+    let type = readType();
+    let name = readName();
+    let defaultValue = readAssign();
+    readComma();
+    let result = { id, type, name };
+    if (defaultValue !== void 0) result.defaultValue = defaultValue;
+    return result;
+  };
+
   const readException = () => {
     let subject = readKeyword('exception');
     let name = readName();
@@ -492,7 +520,7 @@ module.exports = (buffer, offset = 0) => {
   };
 
   const readSubject = () => {
-    return readAnyOne(readTypedef, readConst, readEnum, readStruct, readException, readService, readNamespace, readInclude);
+    return readAnyOne(readTypedef, readConst, readEnum, readStruct, readUnion, readException, readService, readNamespace, readInclude);
   };
 
   const readThrift = () => {

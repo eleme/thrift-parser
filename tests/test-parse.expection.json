@@ -179,6 +179,27 @@
       }
     ]
   },
+  "union": {
+    "Union1": {
+      "items": [
+        {
+          "id": 1,
+          "type": "string",
+          "name": "field1"
+        },
+        {
+          "id": 2,
+          "type": "int",
+          "name": "field2"
+        },
+        {
+          "id": 3,
+          "type": "string",
+          "name": "dropOption"
+        }
+      ]
+    }
+  },
   "exception": {
     "Exception1": [
       {

@@ -20,6 +20,8 @@ const bool C8 = true;
 const bool C9 = false,
 const i16 C10 = 0x7fff
 const i32 C11 = 0x7fffffff
+const i16 C12 = -3e4
+const i32 C13 = 2.147483647e9
 
 /**
  * Enum

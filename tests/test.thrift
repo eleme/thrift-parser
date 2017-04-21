@@ -1,6 +1,6 @@
 namespace php hehe
 namespace * haha
-
+include "Status.Type"
 /******
  * Types
  *****/

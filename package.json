@@ -8,7 +8,9 @@
   "scripts": {
     "test": "cd tests && ./test.sh"
   },
+  "types": "./types/index.d.ts",
   "devDependencies": {
+    "@types/node": "^7.0.13",
     "eslint": "^3.19.0",
     "eslint-config-elemefe": "^0.3.0"
   }

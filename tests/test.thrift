@@ -94,3 +94,11 @@ service Service2 {
     Json test(1: Struct1 s1, 2: Struct2 s2)
       throws (1: Exception1 user_exception, 2: Exception2 system_exception)
 }
+
+service ExtendedService extends Service1 {
+    bool pong()
+}
+
+service ExternalExtends extends external.Service1 {
+    bool pong()
+}

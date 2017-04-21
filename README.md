@@ -39,96 +39,91 @@ Results
 ```json
 {
   "struct": {
-    "MyStruct": {
-      "items": [
-        {
-          "id": "1",
-          "option": "required",
-          "type": "int",
-          "name": "id"
-        },
-        {
-          "id": "2",
-          "option": "required",
-          "type": "bool",
-          "name": "field1"
-        },
-        {
-          "id": "4",
-          "option": "required",
-          "type": "i16",
-          "name": "field"
-        }
-      ]
-    }
+    "MyStruct": [
+      {
+        "id": 1,
+        "option": "required",
+        "type": "int",
+        "name": "id"
+      },
+      {
+        "id": 2,
+        "option": "required",
+        "type": "bool",
+        "name": "field1"
+      },
+      {
+        "id": 4,
+        "option": "required",
+        "type": "i16",
+        "name": "field"
+      }
+    ]
   },
   "exception": {
-    "Exception1": {
-      "items": [
-        {
-          "id": "1",
-          "option": "required",
-          "type": "i32",
-          "name": "error_code"
-        },
-        {
-          "id": "2",
-          "option": "required",
-          "type": "string",
-          "name": "error_name"
-        },
-        {
-          "id": "3",
-          "option": "optional",
-          "type": "string",
-          "name": "message"
-        }
-      ]
-    },
-    "Exception2": {
-      "items": [
-        {
-          "id": "1",
-          "option": "required",
-          "type": "i32",
-          "name": "error_code"
-        },
-        {
-          "id": "2",
-          "option": "required",
-          "type": "string",
-          "name": "error_name"
-        },
-        {
-          "id": "3",
-          "option": "optional",
-          "type": "string",
-          "name": "message"
-        }
-      ]
-    }
+    "Exception1": [
+      {
+        "id": 1,
+        "option": "required",
+        "type": "i32",
+        "name": "error_code"
+      },
+      {
+        "id": 2,
+        "option": "required",
+        "type": "string",
+        "name": "error_name"
+      },
+      {
+        "id": 3,
+        "option": "optional",
+        "type": "string",
+        "name": "message"
+      }
+    ],
+    "Exception2": [
+      {
+        "id": 1,
+        "option": "required",
+        "type": "i32",
+        "name": "error_code"
+      },
+      {
+        "id": 2,
+        "option": "required",
+        "type": "string",
+        "name": "error_name"
+      },
+      {
+        "id": 3,
+        "option": "optional",
+        "type": "string",
+        "name": "message"
+      }
+    ]
   },
   "service": {
     "Service1": {
-      "items": [
-        {
+      "functions": {
+        "ping": {
           "type": "bool",
           "name": "ping",
           "args": [],
           "throws": [
             {
-              "id": "1",
+              "id": 1,
               "type": "Exception1",
               "name": "user_exception"
             },
             {
-              "id": "2",
+              "id": 2,
               "type": "Exception2",
               "name": "system_exception"
             }
-          ]
+          ],
+          "oneway": false
         },
-        {
+        "test": {
           "type": {
             "name": "list",
             "valueType": "MyStruct"
@@ -136,25 +131,26 @@ Results
           "name": "test",
           "args": [
             {
-              "id": "1",
+              "id": 1,
               "type": "MyStruct",
               "name": "ms"
             }
           ],
           "throws": [
             {
-              "id": "1",
+              "id": 1,
               "type": "Exception1",
               "name": "user_exception"
             },
             {
-              "id": "2",
+              "id": 2,
               "type": "Exception2",
               "name": "system_exception"
             }
-          ]
+          ],
+          "oneway": false
         }
-      ]
+      }
     }
   }
 }

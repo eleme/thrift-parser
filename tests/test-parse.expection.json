@@ -215,134 +215,162 @@
   },
   "service": {
     "Service1": {
-      "ping": {
-        "type": "bool",
-        "name": "ping",
-        "args": [],
-        "throws": [
-          {
-            "id": 1,
-            "type": "Exception1",
-            "name": "user_exception"
-          },
-          {
-            "id": 2,
-            "type": "Exception2",
-            "name": "system_exception"
-          }
-        ],
-        "oneway": false
-      },
-      "test": {
-        "type": {
-          "name": "list",
-          "valueType": {
-            "name": "map",
-            "keyType": "Struct1",
-            "valueType": "Struct2"
-          }
+      "functions": {
+        "ping": {
+          "type": "bool",
+          "name": "ping",
+          "args": [],
+          "throws": [
+            {
+              "id": 1,
+              "type": "Exception1",
+              "name": "user_exception"
+            },
+            {
+              "id": 2,
+              "type": "Exception2",
+              "name": "system_exception"
+            }
+          ],
+          "oneway": false
         },
-        "name": "test",
-        "args": [
-          {
-            "id": 1,
-            "type": "Struct1",
-            "name": "s1"
+        "test": {
+          "type": {
+            "name": "list",
+            "valueType": {
+              "name": "map",
+              "keyType": "Struct1",
+              "valueType": "Struct2"
+            }
           },
-          {
-            "id": 2,
-            "type": "Struct2",
-            "name": "s2"
-          }
-        ],
-        "throws": [
-          {
-            "id": 1,
-            "type": "Exception1",
-            "name": "user_exception"
-          },
-          {
-            "id": 2,
-            "type": "Exception2",
-            "name": "system_exception"
-          }
-        ],
-        "oneway": false
-      },
-      "test2": {
-        "type": {
-          "name": "list",
-          "valueType": {
-            "name": "set",
-            "valueType": "Struct1"
-          }
+          "name": "test",
+          "args": [
+            {
+              "id": 1,
+              "type": "Struct1",
+              "name": "s1"
+            },
+            {
+              "id": 2,
+              "type": "Struct2",
+              "name": "s2"
+            }
+          ],
+          "throws": [
+            {
+              "id": 1,
+              "type": "Exception1",
+              "name": "user_exception"
+            },
+            {
+              "id": 2,
+              "type": "Exception2",
+              "name": "system_exception"
+            }
+          ],
+          "oneway": false
         },
-        "name": "test2",
-        "args": [
-          {
-            "id": 1,
-            "type": "Struct1",
-            "name": "s1"
-          }
-        ],
-        "throws": [
-          {
-            "id": 1,
-            "type": "Exception1",
-            "name": "user_exception"
+        "test2": {
+          "type": {
+            "name": "list",
+            "valueType": {
+              "name": "set",
+              "valueType": "Struct1"
+            }
           },
-          {
-            "id": 2,
-            "type": "Exception2",
-            "name": "system_exception"
-          }
-        ],
-        "oneway": false
+          "name": "test2",
+          "args": [
+            {
+              "id": 1,
+              "type": "Struct1",
+              "name": "s1"
+            }
+          ],
+          "throws": [
+            {
+              "id": 1,
+              "type": "Exception1",
+              "name": "user_exception"
+            },
+            {
+              "id": 2,
+              "type": "Exception2",
+              "name": "system_exception"
+            }
+          ],
+          "oneway": false
+        }
       }
     },
     "Service2": {
-      "ping": {
-        "type": "bool",
-        "name": "ping",
-        "args": [],
-        "throws": [],
-        "oneway": false
-      },
-      "foo": {
-        "type": "void",
-        "name": "foo",
-        "args": [],
-        "throws": [],
-        "oneway": true
-      },
-      "test": {
-        "type": "Json",
-        "name": "test",
-        "args": [
-          {
-            "id": 1,
-            "type": "Struct1",
-            "name": "s1"
-          },
-          {
-            "id": 2,
-            "type": "Struct2",
-            "name": "s2"
-          }
-        ],
-        "throws": [
-          {
-            "id": 1,
-            "type": "Exception1",
-            "name": "user_exception"
-          },
-          {
-            "id": 2,
-            "type": "Exception2",
-            "name": "system_exception"
-          }
-        ],
-        "oneway": false
+      "functions": {
+        "ping": {
+          "type": "bool",
+          "name": "ping",
+          "args": [],
+          "throws": [],
+          "oneway": false
+        },
+        "foo": {
+          "type": "void",
+          "name": "foo",
+          "args": [],
+          "throws": [],
+          "oneway": true
+        },
+        "test": {
+          "type": "Json",
+          "name": "test",
+          "args": [
+            {
+              "id": 1,
+              "type": "Struct1",
+              "name": "s1"
+            },
+            {
+              "id": 2,
+              "type": "Struct2",
+              "name": "s2"
+            }
+          ],
+          "throws": [
+            {
+              "id": 1,
+              "type": "Exception1",
+              "name": "user_exception"
+            },
+            {
+              "id": 2,
+              "type": "Exception2",
+              "name": "system_exception"
+            }
+          ],
+          "oneway": false
+        }
+      }
+    },
+    "ExtendedService": {
+      "extends": "Service1",
+      "functions": {
+        "pong": {
+          "type": "bool",
+          "name": "pong",
+          "args": [],
+          "throws": [],
+          "oneway": false
+        }
+      }
+    },
+    "ExternalExtends": {
+      "extends": "external.Service1",
+      "functions": {
+        "pong": {
+          "type": "bool",
+          "name": "pong",
+          "args": [],
+          "throws": [],
+          "oneway": false
+        }
       }
     }
   }

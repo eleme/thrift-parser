@@ -373,11 +373,27 @@ module.exports = (buffer, offset = 0) => {
     return {subject, name, items};
   };
 
+  const readExtends = () => {
+    let beginning = offset;
+    try {
+      readKeyword('extends');
+      let name = readRefValue()['='].join('.');
+      return name;
+    } catch (ignore) {
+      offset = beginning;
+      return;
+    }
+  };
+
   const readService = () => {
     let subject = readKeyword('service');
     let name = readName();
-    let items = readServiceBlock();
-    return {subject, name, items};
+    let extend = readExtends(); // extends is a reserved keyword
+    let functions = readServiceBlock();
+    let result = {subject, name};
+    if (extend !== void 0) result.extends = extend;
+    if (functions !== void 0) result.functions = functions;
+    return result;
   };
 
   const readNamespace = () => {
@@ -469,7 +485,6 @@ module.exports = (buffer, offset = 0) => {
         delete block.name;
         switch (subject) {
           case 'exception':
-          case 'service':
           case 'struct':
             storage[subject][name] = block.items;
             break;

@@ -7,7 +7,7 @@ const args = process.argv.slice(2);
 if (args.length) {
   args.forEach(path => {
     console.log(JSON.stringify(parser(fs.readFileSync(path)), null, 2)); // eslint-disable-line
-  });  
+  });
 } else {
   let receiver = [];
   process.stdin.on('data', data => receiver.push(data));

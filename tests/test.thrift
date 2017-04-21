@@ -6,6 +6,8 @@ include "Status.Type"
  *****/
 typedef string Json
 typedef i64 Mobile
+typedef string ListSep1;
+typedef string ListSep2,
 
 /**
  * Const

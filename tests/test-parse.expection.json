@@ -18,6 +18,12 @@
     },
     "Mobile": {
       "type": "i64"
+    },
+    "ListSep1": {
+      "type": "string"
+    },
+    "ListSep2": {
+      "type": "string"
     }
   },
   "const": {

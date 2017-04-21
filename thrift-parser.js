@@ -109,6 +109,7 @@ module.exports = (buffer, offset = 0) => {
     let subject = readKeyword('typedef');
     let type = readType();
     let name = readName();
+    readComma();
     return {subject, type, name};
   };
 

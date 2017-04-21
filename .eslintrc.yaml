@@ -1,0 +1,7 @@
+---
+  env:
+    es6: true
+    node: true
+  rules:
+    no-throw-literal: 0
+  extends: elemefe

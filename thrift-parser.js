@@ -134,7 +134,6 @@ module.exports = (buffer, offset = 0) => {
 
   const readName = () => {
     let i = 0;
-    let result = [];
     let byte = buffer[offset];
     while (
       (byte >= 97 && byte <= 122) || // a-z
@@ -150,7 +149,6 @@ module.exports = (buffer, offset = 0) => {
 
   const readScope = () => {
     let i = 0;
-    let result = [];
     let byte = buffer[offset];
     while (
       (byte >= 97 && byte <= 122) || // a-z
@@ -370,7 +368,7 @@ module.exports = (buffer, offset = 0) => {
     let subject = readKeyword('service');
     let name = readName();
     let items = readServiceBlock();
-    return { subject, name, items }; 
+    return { subject, name, items };
   };
 
   const readNamespace = () => {

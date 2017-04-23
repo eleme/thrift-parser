@@ -51,6 +51,7 @@ struct Struct2 {
     2: required Json field1,
     3: required Mobile field2,
     4: required i16 field3,
+    5: string field4 = "default value"
 }
 
 union Union1 {

@@ -191,6 +191,12 @@
         "option": "required",
         "type": "i16",
         "name": "field3"
+      },
+      {
+        "id": 5,
+        "type": "string",
+        "name": "field4",
+        "defaultValue": "default value"
       }
     ]
   },

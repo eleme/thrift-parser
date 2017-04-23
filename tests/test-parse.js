@@ -8,3 +8,7 @@ fs.readFile('./test.thrift', (error, buffer) => {
   // console.log(JSON.stringify(ast, null, 2));
   assert.deepEqual(ast, expectoin);
 });
+
+fs.readFile('./invalid-number.thrift', (error, buffer) => {
+  assert.throws(() => thriftParser(buffer));
+});

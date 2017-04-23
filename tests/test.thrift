@@ -8,6 +8,7 @@ typedef string Json
 typedef i64 Mobile
 typedef string ListSep1;
 typedef string ListSep2,
+typedef binary Buffer
 
 /**
  * Const
@@ -42,6 +43,7 @@ struct Struct1 {
     2: required bool field1,
     # 3: required string field,
     4: required i16 field,
+    5: required binary field2
 }
 
 struct Struct2 {

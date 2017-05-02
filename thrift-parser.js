@@ -379,18 +379,18 @@ module.exports = (buffer, offset = 0) => {
   const readStruct = () => {
     let subject = readKeyword('struct');
     let name = readName();
-    let items = readStructBlock();
+    let items = readStructLikeBlock();
     return {subject, name, items};
   };
 
-  const readStructBlock = () => {
+  const readStructLikeBlock = () => {
     readCharCode(123); // {
-    let receiver = readUntilThrow(readStructItem);
+    let receiver = readUntilThrow(readStructLikeItem);
     readCharCode(125); // }
     return receiver;
   };
 
-  const readStructItem = () => {
+  const readStructLikeItem = () => {
     let id;
     try {
       id = readNumberValue();
@@ -413,35 +413,14 @@ module.exports = (buffer, offset = 0) => {
   const readUnion = () => {
     let subject = readKeyword('union');
     let name = readName();
-    let items = readUnionBlock();
-    return { subject, name, items };
-  };
-
-  const readUnionBlock = () => {
-    readCharCode(123); // {
-    let receiver = readUntilThrow(readUnionItem);
-    readCharCode(125); // }
-    return receiver;
-  };
-
-  const readUnionItem = () => {
-    let id = readNumberValue();
-    readCharCode(58); // :
-    // Read the keyword but drop it
-    readAnyOne(() => readKeyword('required'), () => readKeyword('optional'), readNoop);
-    let type = readType();
-    let name = readName();
-    let defaultValue = readAssign();
-    readComma();
-    let result = { id, type, name };
-    if (defaultValue !== void 0) result.defaultValue = defaultValue;
-    return result;
+    let items = readStructLikeBlock();
+    return {subject, name, items};
   };
 
   const readException = () => {
     let subject = readKeyword('exception');
     let name = readName();
-    let items = readStructBlock();
+    let items = readStructLikeBlock();
     return {subject, name, items};
   };
 
@@ -508,7 +487,7 @@ module.exports = (buffer, offset = 0) => {
 
   const readServiceArgs = () => {
     readCharCode(40); // (
-    let receiver = readUntilThrow(readStructItem);
+    let receiver = readUntilThrow(readStructLikeItem);
     readCharCode(41); // )
     readSpace();
     return receiver;

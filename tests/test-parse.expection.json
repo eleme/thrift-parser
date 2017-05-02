@@ -216,7 +216,8 @@
         {
           "id": 3,
           "type": "string",
-          "name": "dropOption"
+          "name": "withOption",
+          "option": "required"
         }
       ]
     }

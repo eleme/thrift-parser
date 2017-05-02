@@ -57,7 +57,7 @@ struct Struct2 {
 union Union1 {
   1: string field1;
   2: int field2;
-  3: required string dropOption;
+  3: required string withOption;
 }
 
 exception Exception1 {

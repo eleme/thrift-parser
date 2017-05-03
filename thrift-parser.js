@@ -109,6 +109,7 @@ module.exports = (buffer, offset = 0) => {
     let subject = readKeyword('typedef');
     let type = readType();
     let name = readName();
+    readComma();
     return {subject, type, name};
   };
 
@@ -168,9 +169,51 @@ module.exports = (buffer, offset = 0) => {
 
   const readNumberValue = () => {
     let result = [];
+    if (buffer[offset] === 45) { // -
+      result.push(buffer[offset]);
+      offset++;
+    }
+
     for (; ;) {
       let byte = buffer[offset];
-      if ((byte >= 48 && byte <= 57) || byte === 45 || byte === 46) {
+      if ((byte >= 48 && byte <= 57) || byte === 46) {
+        offset++;
+        result.push(byte);
+      } else {
+        if (result.length) {
+          readSpace();
+          return +String.fromCharCode(...result);
+        } else {
+          throw 'Unexpected token ' + String.fromCharCode(byte);
+        }
+      }
+    }
+  };
+
+  const readEnotationValue = () => {
+    let result = [];
+    if (buffer[offset] === 45) { // -
+      result.push(buffer[offset]);
+      offset++;
+    }
+
+    for (;;) {
+      let byte = buffer[offset];
+      if ((byte >= 48 && byte <= 57) || byte === 46) {
+        result.push(byte);
+        offset++;
+      } else {
+        break;
+      }
+    }
+
+    if (buffer[offset] !== 69 && buffer[offset] !== 101) throw 'Unexpected token'; // E or e
+    result.push(buffer[offset]);
+    offset++;
+
+    for (;;) {
+      let byte = buffer[offset];
+      if (byte >= 48 && byte <= 57) { // 0-9
         offset++;
         result.push(byte);
       } else {
@@ -284,6 +327,7 @@ module.exports = (buffer, offset = 0) => {
 
   const readValue = () => readAnyOne(
     readHexadecimalValue, // This coming before readNumberValue is important, unfortunately
+    readEnotationValue,   // This also needs to come before readNumberValue
     readNumberValue,
     readStringValue,
     readBooleanValue,
@@ -335,18 +379,18 @@ module.exports = (buffer, offset = 0) => {
   const readStruct = () => {
     let subject = readKeyword('struct');
     let name = readName();
-    let items = readStructBlock();
+    let items = readStructLikeBlock();
     return {subject, name, items};
   };
 
-  const readStructBlock = () => {
+  const readStructLikeBlock = () => {
     readCharCode(123); // {
-    let receiver = readUntilThrow(readStructItem);
+    let receiver = readUntilThrow(readStructLikeItem);
     readCharCode(125); // }
     return receiver;
   };
 
-  const readStructItem = () => {
+  const readStructLikeItem = () => {
     let id;
     try {
       id = readNumberValue();
@@ -366,10 +410,17 @@ module.exports = (buffer, offset = 0) => {
     return result;
   };
 
+  const readUnion = () => {
+    let subject = readKeyword('union');
+    let name = readName();
+    let items = readStructLikeBlock();
+    return {subject, name, items};
+  };
+
   const readException = () => {
     let subject = readKeyword('exception');
     let name = readName();
-    let items = readStructBlock();
+    let items = readStructLikeBlock();
     return {subject, name, items};
   };
 
@@ -436,7 +487,7 @@ module.exports = (buffer, offset = 0) => {
 
   const readServiceArgs = () => {
     readCharCode(40); // (
-    let receiver = readUntilThrow(readStructItem);
+    let receiver = readUntilThrow(readStructLikeItem);
     readCharCode(41); // )
     readSpace();
     return receiver;
@@ -454,7 +505,7 @@ module.exports = (buffer, offset = 0) => {
   };
 
   const readSubject = () => {
-    return readAnyOne(readTypedef, readConst, readEnum, readStruct, readException, readService, readNamespace, readInclude);
+    return readAnyOne(readTypedef, readConst, readEnum, readStruct, readUnion, readException, readService, readNamespace, readInclude);
   };
 
   const readThrift = () => {

@@ -6,6 +6,9 @@ include "Status.Type"
  *****/
 typedef string Json
 typedef i64 Mobile
+typedef string ListSep1;
+typedef string ListSep2,
+typedef binary Buffer
 
 /**
  * Const
@@ -20,6 +23,8 @@ const bool C8 = true;
 const bool C9 = false,
 const i16 C10 = 0x7fff
 const i32 C11 = 0x7fffffff
+const i16 C12 = -3e4
+const i32 C13 = 2.147483647e9
 
 /**
  * Enum
@@ -38,6 +43,7 @@ struct Struct1 {
     2: required bool field1,
     # 3: required string field,
     4: required i16 field,
+    5: required binary field2
 }
 
 struct Struct2 {
@@ -45,6 +51,13 @@ struct Struct2 {
     2: required Json field1,
     3: required Mobile field2,
     4: required i16 field3,
+    5: string field4 = "default value"
+}
+
+union Union1 {
+  1: string field1;
+  2: int field2;
+  3: required string withOption;
 }
 
 exception Exception1 {

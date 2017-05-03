@@ -18,6 +18,15 @@
     },
     "Mobile": {
       "type": "i64"
+    },
+    "ListSep1": {
+      "type": "string"
+    },
+    "ListSep2": {
+      "type": "string"
+    },
+    "Buffer": {
+      "type": "binary"
     }
   },
   "const": {
@@ -95,6 +104,14 @@
     "C11": {
       "type": "i32",
       "value": 2147483647
+    },
+    "C12": {
+      "type": "i16",
+      "value": -30000
+    },
+    "C13": {
+      "type": "i32",
+      "value": 2147483647
     }
   },
   "enum": {
@@ -142,6 +159,12 @@
         "option": "required",
         "type": "i16",
         "name": "field"
+      },
+      {
+        "id": 5,
+        "type": "binary",
+        "name": "field2",
+        "option": "required"
       }
     ],
     "Struct2": [
@@ -168,8 +191,36 @@
         "option": "required",
         "type": "i16",
         "name": "field3"
+      },
+      {
+        "id": 5,
+        "type": "string",
+        "name": "field4",
+        "defaultValue": "default value"
       }
     ]
+  },
+  "union": {
+    "Union1": {
+      "items": [
+        {
+          "id": 1,
+          "type": "string",
+          "name": "field1"
+        },
+        {
+          "id": 2,
+          "type": "int",
+          "name": "field2"
+        },
+        {
+          "id": 3,
+          "type": "string",
+          "name": "withOption",
+          "option": "required"
+        }
+      ]
+    }
   },
   "exception": {
     "Exception1": [

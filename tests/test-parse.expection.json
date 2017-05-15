@@ -112,6 +112,18 @@
     "C13": {
       "type": "i32",
       "value": 2147483647
+    },
+    "chinese_test": {
+      "type": "string",
+      "value": "中文测试"
+    },
+    "japanese_test": {
+      "type": "string",
+      "value": "日本語テスト"
+    },
+    "emoji_test": {
+      "type": "string",
+      "value": "😂 "
     }
   },
   "enum": {

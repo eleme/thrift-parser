@@ -1,5 +1,3 @@
-const path = require('path');
-
 class ThriftFileParsingError extends Error {
   constructor(message) {
     super(message);
@@ -442,7 +440,7 @@ module.exports = (buffer, offset = 0) => {
     let subject = readKeyword('include');
     readSpace();
     let includePath = readQuotation();
-    let name = path.basename(includePath, '.thrift');
+    let name = includePath.replace(/^.*?([^/]*?)(:?\.thrift)?$/, '$1.thrift');
     readSpace();
     return {subject, name, path: includePath};
   };

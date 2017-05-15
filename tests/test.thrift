@@ -1,6 +1,9 @@
 namespace php hehe
 namespace * haha
 include "Status.Type"
+include "dotThrift.thrift"
+include "a/b/basename"
+include "a\b\basenameInWindows"
 /******
  * Types
  *****/

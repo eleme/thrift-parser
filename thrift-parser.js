@@ -440,7 +440,7 @@ module.exports = (buffer, offset = 0) => {
     let subject = readKeyword('include');
     readSpace();
     let includePath = readQuotation();
-    let name = includePath.replace(/^.*?([^/]*?)(:?\.thrift)?$/, '$1.thrift');
+    let name = includePath.replace(/^.*?([^/\\]*?)(:?\.thrift)?$/, '$1');
     readSpace();
     return {subject, name, path: includePath};
   };

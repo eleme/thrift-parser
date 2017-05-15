@@ -10,6 +10,15 @@
   "include": {
     "Status.Type": {
       "path": "Status.Type"
+    },
+    "dotThrift": {
+      "path": "dotThrift.thrift"
+    },
+    "basename": {
+      "path": "a/b/basename"
+    },
+    "basenameInWindows": {
+      "path": "a\\b\\basenameInWindows"
     }
   },
   "typedef": {

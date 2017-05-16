@@ -65,51 +65,52 @@
   },
   "service": {
     "Service1": {
-      "ping": {
-        "type": "bool",
-        "name": "ping",
-        "args": [],
-        "throws": [
-          {
-            "id": 1,
-            "type": "Exception1",
-            "name": "user_exception"
-          },
-          {
-            "id": 2,
-            "type": "Exception2",
-            "name": "system_exception"
-          }
-        ],
-        "oneway": false
-      },
-      "test": {
-        "type": {
-          "name": "list",
-          "valueType": "MyStruct"
+      "functions": {
+        "ping": {
+          "type": "bool",
+          "name": "ping",
+          "args": [],
+          "throws": [
+            {
+              "id": 1,
+              "type": "Exception1",
+              "name": "user_exception"
+            },
+            {
+              "id": 2,
+              "type": "Exception2",
+              "name": "system_exception"
+            }
+          ],
+          "oneway": false
         },
-        "name": "test",
-        "args": [
-          {
-            "id": 1,
-            "type": "MyStruct",
-            "name": "ms"
-          }
-        ],
-        "throws": [
-          {
-            "id": 1,
-            "type": "Exception1",
-            "name": "user_exception"
+        "test": {
+          "type": {
+            "name": "list",
+            "valueType": "MyStruct"
           },
-          {
-            "id": 2,
-            "type": "Exception2",
-            "name": "system_exception"
-          }
-        ],
-        "oneway": false
-
+          "name": "test",
+          "args": [
+            {
+              "id": 1,
+              "type": "MyStruct",
+              "name": "ms"
+            }
+          ],
+          "throws": [
+            {
+              "id": 1,
+              "type": "Exception1",
+              "name": "user_exception"
+            },
+            {
+              "id": 2,
+              "type": "Exception2",
+              "name": "system_exception"
+            }
+          ],
+          "oneway": false
+        }
       }
     }
   }

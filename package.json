@@ -1,6 +1,6 @@
 {
   "name": "thrift-parser",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "To parse thrift file to a AST.",
   "main": "thrift-parser.js",
   "author": "rongyi.liu@ele.me",

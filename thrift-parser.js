@@ -1,6 +1,8 @@
-class ThriftFileParsingError extends Error {
-  constructor(message) {
+class ThriftFileParsingError extends SyntaxError {
+  constructor({ message, context, line }) {
     super(message);
+    this.context = context;
+    this.line = line;
     this.name = 'THRIFT_FILE_PARSING_ERROR';
   }
 }
@@ -9,31 +11,47 @@ module.exports = (source, offset = 0) => {
 
   source += '';
 
+  let nCount = 0;
+  let rCount = 0;
+
+  let stack = [];
+
+  const record = char => {
+    if (char === '\r') rCount++;
+    else if (char === '\n') nCount++;
+  };
+  const save = () => stack.push({ offset, nCount, rCount });
+  const restore = () => ({ offset, nCount, rCount } = stack[stack.length - 1]);
+  const drop = () => stack.pop();
+
   const readAnyOne = (...args) => {
-    let beginning = offset;
+    save();
     for (let i = 0; i < args.length; i++) {
       try {
-        return args[i]();
+        let result = args[i]();
+        drop();
+        return result;
       } catch (ignore) {
-        offset = beginning;
+        restore();
         continue;
       }
     }
-    offset = beginning;
+    drop();
     throw 'Unexcepted Token';
   };
 
   const readUntilThrow = (transaction, key) => {
     let receiver = key ? {} : [];
-    let beginning;
     for (;;) {
       try {
-        beginning = offset;
+        save();
         let result = transaction();
         key ? receiver[result[key]] = result : receiver.push(result);
       } catch (ignore) {
-        offset = beginning;
+        restore();
         return receiver;
+      } finally {
+        drop();
       }
     }
   };
@@ -62,7 +80,10 @@ module.exports = (source, offset = 0) => {
     let i = 0;
     if (source[offset + i++] !== '/' || source[offset + i++] !== '*') return false;
     do {
-      while (offset + i < source.length && source[offset + i++] !== '*') {}
+      record(source[offset + i]);
+      while (offset + i < source.length && source[offset + i++] !== '*') {
+        record(source[offset + i]);
+      }
     } while (offset + i < source.length && source[offset + i] !== '/');
     offset += i + 1;
     return true;
@@ -87,6 +108,7 @@ module.exports = (source, offset = 0) => {
   const readSpace = () => {
     for (;;) {
       let byte = source[offset];
+      record(byte);
       if (byte === '\n' || byte === '\r' || byte === ' ' || byte === '\t') {
         offset++;
       } else {
@@ -365,12 +387,14 @@ module.exports = (source, offset = 0) => {
   };
 
   const readAssign = () => {
-    let beginning = offset;
     try {
+      save();
       readChar('=');
       return readValue();
     } catch (ignore) {
-      offset = beginning;
+      restore();
+    } finally {
+      drop();
     }
   };
 
@@ -423,14 +447,16 @@ module.exports = (source, offset = 0) => {
   };
 
   const readExtends = () => {
-    let beginning = offset;
     try {
+      save();
       readKeyword('extends');
       let name = readRefValue()['='].join('.');
       return name;
     } catch (ignore) {
-      offset = beginning;
+      restore();
       return;
+    } finally {
+      drop();
     }
   };
 
@@ -508,13 +534,15 @@ module.exports = (source, offset = 0) => {
   };
 
   const readServiceThrow = () => {
-    let beginning = offset;
     try {
+      save();
       readKeyword('throws');
       return readServiceArgs();
     } catch (ignore) {
-      offset = beginning;
+      restore();
       return [];
+    } finally {
+      drop();
     }
   };
 
@@ -541,8 +569,9 @@ module.exports = (source, offset = 0) => {
             storage[subject][name] = block;
         }
       } catch (message) {
-        console.error(`[31m${source.slice(offset, offset + 50)}[0m`); // eslint-disable-line no-console
-        throw new ThriftFileParsingError(message);
+        let context = source.slice(offset, offset + 50);
+        let line = Math.max(nCount, rCount) + 1;
+        throw new ThriftFileParsingError({ message, context, line });
       } finally {
         if (source.length === offset) break;
       }

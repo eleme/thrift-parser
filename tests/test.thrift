@@ -26,6 +26,10 @@ const i32 C11 = 0x7fffffff
 const i16 C12 = -3e4
 const i32 C13 = 2.147483647e9
 
+const string chinese_test = "中文测试"
+const string japanese_test = "日本語テスト"
+const string emoji_test = "😂 "
+
 /**
  * Enum
  */

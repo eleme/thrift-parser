@@ -222,26 +222,24 @@
     ]
   },
   "union": {
-    "Union1": {
-      "items": [
-        {
-          "id": 1,
-          "type": "string",
-          "name": "field1"
-        },
-        {
-          "id": 2,
-          "type": "int",
-          "name": "field2"
-        },
-        {
-          "id": 3,
-          "type": "string",
-          "name": "withOption",
-          "option": "required"
-        }
-      ]
-    }
+    "Union1": [
+      {
+        "id": 1,
+        "type": "string",
+        "name": "field1"
+      },
+      {
+        "id": 2,
+        "type": "int",
+        "name": "field2"
+      },
+      {
+        "id": 3,
+        "type": "string",
+        "name": "withOption",
+        "option": "required"
+      }
+    ]
   },
   "exception": {
     "Exception1": [

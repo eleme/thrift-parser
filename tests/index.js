@@ -6,29 +6,15 @@ let thriftParser = require('../');
 
 describe('thriftParser', function() {
 
-  it('parses simple struct', function(done) {
-    let content = `
-      struct MyStruct {
-        1: required int id,
-      }
-    `;
+  describe('regressions', function() {
 
-    let expected = {
-      struct: {
-        MyStruct: [
-          {
-            id: 1,
-            option: 'required',
-            type: 'int',
-            name: 'id'
-          }
-        ]
-      }
-    };
+    it('throws on number with `-` in the middle', function(done) {
+      const content = `
+        const int32 invalid = 1-2
+      `;
 
-    let ast = thriftParser(content);
-
-    expect(ast).toEqual(expected);
-    done();
+      expect(() => thriftParser(content)).toThrow();
+      done();
+    });
   });
 });

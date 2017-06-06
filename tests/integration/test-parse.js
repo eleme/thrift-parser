@@ -1,4 +1,4 @@
-const thriftParser = require('../thrift-parser');
+const thriftParser = require('../../thrift-parser');
 const assert = require('assert');
 const fs = require('fs');
 const expectoin = require('./test-parse.expection.json');

@@ -40,6 +40,10 @@ type Structs = {
   [name: string]: Field[],
 }
 
+type Unions = {
+  [name: string]: Field[],
+}
+
 type Exceptions = {
   [name: string]: Field[],
 }
@@ -111,6 +115,7 @@ type JsonAST = {
   const?: Consts,
   enum?: Enums,
   struct?: Structs,
+  union?: Unions,
   exception?: Exceptions,
   service?: Services,
 };

@@ -109,7 +109,7 @@ describe('typedefs', function() {
     done();
   });
 
-  it.skip('does not parse an invalid Map typedef', function(done) {
+  it('does not parse an invalid Map typedef', function(done) {
     const content = `
       typedef map<string> Test;
     `;
@@ -149,7 +149,7 @@ describe('typedefs', function() {
     done();
   });
 
-  it.skip('does not parse an invalid Set typedef', function(done) {
+  it('does not parse an invalid Set typedef', function(done) {
     const content = `
       typedef set<string, string> Test;
     `;
@@ -189,7 +189,7 @@ describe('typedefs', function() {
     done();
   });
 
-  it.skip('does not parse an invalid List typedef', function(done) {
+  it('does not parse an invalid List typedef', function(done) {
     const content = `
       typedef list<string, string> Test;
     `;

@@ -63,13 +63,50 @@ describe('includes', function() {
     done();
   });
 
-  // TODO: Make this pass
-  it.skip('does not parse paths wrapped in mixed-quotes (Literal)', function(done) {
+  it('does not parse paths wrapped in mixed-quotes (Literal)', function(done) {
     const content = `
         include 'test"
     `;
 
     expect(() => thriftParser(content)).toThrow();
+    done();
+  });
+
+  it('parses a double-quote inside a single-quoted value (Literal)', function(done) {
+    const content = `
+       include 'te"st'
+    `;
+
+    const expected = {
+      include: {
+        'te"st': {
+          path: 'te"st'
+        }
+      }
+    };
+
+    const ast = thriftParser(content);
+
+    expect(ast).toEqual(expected);
+    done();
+  });
+
+  it('parses a single-quote inside a double-quoted value (Literal)', function(done) {
+    const content = `
+       include "te'st"
+    `;
+
+    const expected = {
+      include: {
+        "te'st": {
+          path: "te'st"
+        }
+      }
+    };
+
+    const ast = thriftParser(content);
+
+    expect(ast).toEqual(expected);
     done();
   });
 });

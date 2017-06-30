@@ -23,6 +23,7 @@ module.exports = (source, offset = 0) => {
   const save = () => stack.push({ offset, nCount, rCount });
   const restore = () => ({ offset, nCount, rCount } = stack[stack.length - 1]);
   const drop = () => stack.pop();
+  let containerType;
 
   const readAnyOne = (...args) => {
     save();
@@ -136,20 +137,22 @@ module.exports = (source, offset = 0) => {
   const readType = () => readAnyOne(readTypeMap, readTypeList, readTypeNormal);
 
   const readTypeMap = () => {
-    let name = readName();
+    let name = readKeyword('map');
     readChar('<');
     let keyType = readType();
     readComma();
     let valueType = readType();
     readChar('>');
+    containerType = name;
     return {name, keyType, valueType};
   };
 
   const readTypeList = () => {
-    let name = readName();
+    let name = readAnyOne(() => readKeyword('list'), () => readKeyword('set'));
     readChar('<');
     let valueType = readType();
     readChar('>');
+    containerType = name;
     return {name, valueType};
   };
 
@@ -179,7 +182,8 @@ module.exports = (source, offset = 0) => {
       byte === '_' ||
       (byte >= 'A' && byte <= 'Z') ||
       (byte >= '0' && byte <= '9') ||
-      (byte === '*')
+      (byte === '*') ||
+      (byte === '.')
     ) byte = source[offset + ++i];
     if (i === 0) throw 'Unexpected token on readScope';
     let value = source.slice(offset, offset += i);
@@ -187,12 +191,46 @@ module.exports = (source, offset = 0) => {
     return value;
   };
 
-  const readNumberValue = () => {
-    let result = [];
-    if (source[offset] === '-') {
-      result.push(source[offset]);
+  const readNumberSign = () => {
+    let result;
+    if (source[offset] === '+' || source[offset] === '-') {
+      result = source[offset];
       offset++;
     }
+    return result;
+  };
+
+  const readIntegerValue = () => {
+    let result = [];
+    let sign = readNumberSign();
+    if (sign !== void 0) result.push(sign);
+
+    for (; ;) {
+      let byte = source[offset];
+      if ((byte >= '0' && byte <= '9')) {
+        offset++;
+        result.push(byte);
+      } else if (
+        byte === 'E' || byte === 'e' ||
+        byte === 'X' || byte === 'x' ||
+        byte === '.'
+      ) {
+        throw `Unexpected token ${byte} for integer value`;
+      } else {
+        if (result.length) {
+          readSpace();
+          return +result.join('');
+        } else {
+          throw 'Unexpected token ' + byte;
+        }
+      }
+    }
+  };
+
+  const readDecimalValue = () => {
+    let result = [];
+    let sign = readNumberSign();
+    if (sign !== void 0) result.push(sign);
 
     for (;;) {
       let byte = source[offset];
@@ -296,13 +334,13 @@ module.exports = (source, offset = 0) => {
   const readStringValue = () => {
     let receiver = [];
     let start;
-    for (;;) {
+    while (source[offset] != null) {
       let byte = source[offset++];
       if (receiver.length) {
         if (byte === start) {
           receiver.push(byte);
           readSpace();
-          return new Function('return ' + receiver.join(''))();
+          return receiver.slice(1, -1).join('');
         } else if (byte === '\\') {
           receiver.push(byte);
           offset++;
@@ -319,6 +357,7 @@ module.exports = (source, offset = 0) => {
         }
       }
     }
+    throw 'Unterminated string value';
   };
 
   const readListValue = () => {
@@ -329,6 +368,10 @@ module.exports = (source, offset = 0) => {
       return value;
     });
     readChar(']');
+    if (containerType !== 'set' && containerType !== 'list') {
+      throw `Invalid ${containerType} value`;
+    }
+    containerType = undefined;
     return list;
   };
 
@@ -342,13 +385,18 @@ module.exports = (source, offset = 0) => {
       return {key, value};
     });
     readChar('}');
+    if (containerType !== 'map') {
+      throw `Invalid ${containerType} value`;
+    }
+    containerType = undefined;
     return list;
   };
 
   const readValue = () => readAnyOne(
     readHexadecimalValue, // This coming before readNumberValue is important, unfortunately
     readEnotationValue,   // This also needs to come before readNumberValue
-    readNumberValue,
+    readDecimalValue,
+    readIntegerValue,
     readStringValue,
     readBooleanValue,
     readListValue,
@@ -360,7 +408,8 @@ module.exports = (source, offset = 0) => {
     let subject = readKeyword('const');
     let type = readType();
     let name = readName();
-    let value = readAssign();
+    readChar('=');
+    let value = readValue();
     readComma();
     return {subject, type, name, value};
   };
@@ -381,9 +430,22 @@ module.exports = (source, offset = 0) => {
 
   const readEnumItem = () => {
     let name = readName();
-    let value = readAssign();
+    let value = readEnumValue();
     readComma();
-    return {name, value};
+    let result = {name};
+    if (value !== void 0) result.value = value;
+    return result;
+  };
+
+  const readEnumValue = () => {
+    let beginning = offset;
+    try {
+      readChar('=');
+    } catch (ignore) {
+      offset = beginning;
+      return;
+    }
+    return readAnyOne(readHexadecimalValue, readIntegerValue);
   };
 
   const readAssign = () => {
@@ -415,7 +477,7 @@ module.exports = (source, offset = 0) => {
   const readStructLikeItem = () => {
     let id;
     try {
-      id = readNumberValue();
+      id = readAnyOne(readHexadecimalValue, readIntegerValue);
       readChar(':');
     } catch (err) {
 
@@ -426,7 +488,8 @@ module.exports = (source, offset = 0) => {
     let name = readName();
     let defaultValue = readAssign();
     readComma();
-    let result = {id, type, name};
+    let result = {type, name};
+    if (id !== void 0) result.id = id;
     if (option !== void 0) result.option = option;
     if (defaultValue !== void 0) result.defaultValue = defaultValue;
     return result;
@@ -488,16 +551,19 @@ module.exports = (source, offset = 0) => {
   };
 
   const readQuotation = () => {
+    let quoteMatch;
     if (source[offset] === '"' || source[offset] === '\'') {
+      quoteMatch = source[offset];
       offset++;
     } else {
       throw 'include error';
     }
     let i = offset;
-    while (source[i] !== '"' && source[i] !== '\'') {
+    // Read until it finds a matching quote or end-of-file
+    while (source[i] !== quoteMatch && source[i] != null) {
       i++;
     }
-    if (source[i] === '"' || source[i] === '\'') {
+    if (source[i] === quoteMatch) {
       let value = source.slice(offset, i);
       offset = i + 1;
       return value;

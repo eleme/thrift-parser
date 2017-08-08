@@ -23,7 +23,6 @@ module.exports = (source, offset = 0) => {
   const save = () => stack.push({ offset, nCount, rCount });
   const restore = () => ({ offset, nCount, rCount } = stack[stack.length - 1]);
   const drop = () => stack.pop();
-  let containerType;
 
   const readAnyOne = (...args) => {
     save();
@@ -143,7 +142,6 @@ module.exports = (source, offset = 0) => {
     readComma();
     let valueType = readType();
     readChar('>');
-    containerType = name;
     return {name, keyType, valueType};
   };
 
@@ -152,7 +150,6 @@ module.exports = (source, offset = 0) => {
     readChar('<');
     let valueType = readType();
     readChar('>');
-    containerType = name;
     return {name, valueType};
   };
 
@@ -368,10 +365,6 @@ module.exports = (source, offset = 0) => {
       return value;
     });
     readChar(']');
-    if (containerType !== 'set' && containerType !== 'list') {
-      throw `Invalid ${containerType} value`;
-    }
-    containerType = undefined;
     return list;
   };
 
@@ -385,10 +378,6 @@ module.exports = (source, offset = 0) => {
       return {key, value};
     });
     readChar('}');
-    if (containerType !== 'map') {
-      throw `Invalid ${containerType} value`;
-    }
-    containerType = undefined;
     return list;
   };
 

@@ -282,7 +282,7 @@ describe('consts', function() {
     done();
   });
 
-  it('does not parse an invalid Map value', function(done) {
+  it.skip('does not parse an invalid Map value', function(done) {
     const content = `
       const map<i32, string> test = [ 1, 2, 3]
     `;
@@ -346,7 +346,7 @@ describe('consts', function() {
     done();
   });
 
-  it('does not parse an invalid Set value', function(done) {
+  it.skip('does not parse an invalid Set value', function(done) {
     const content = `
       const set<i32> test = { 1: 'a', 2: 'b', 3: 'c' }
     `;
@@ -410,12 +410,153 @@ describe('consts', function() {
     done();
   });
 
-  it('does not parse an invalid List value', function(done) {
+  it.skip('does not parse an invalid List value', function(done) {
     const content = `
       const list<i32> test = { 1: 'a', 2: 'b', 3: 'c' }
     `;
 
     expect(() => thriftParser(content)).toThrow();
+    done();
+  });
+
+  it('parses a set of sets', function(done) {
+    const content = `
+      const set<set<string>> test = [['hello', 'world'], ['foo', 'bar']]
+    `;
+
+    const expected = {
+      const: {
+        test: {
+          type: {
+            name: 'set',
+            valueType: {
+              name: 'set',
+              valueType: 'string'
+            }
+          },
+          value: [
+            ['hello', 'world'],
+            ['foo', 'bar']
+          ]
+        }
+      }
+    };
+
+    const ast = thriftParser(content);
+
+    expect(ast).toEqual(expected);
+    done();
+  });
+
+  it('parses a list of lists', function(done) {
+    const content = `
+      const list<list<string>> test = [['hello', 'world'], ['foo', 'bar']]
+    `;
+
+    const expected = {
+      const: {
+        test: {
+          type: {
+            name: 'list',
+            valueType: {
+              name: 'list',
+              valueType: 'string'
+            }
+          },
+          value: [
+            ['hello', 'world'],
+            ['foo', 'bar']
+          ]
+        }
+      }
+    };
+
+    const ast = thriftParser(content);
+
+    expect(ast).toEqual(expected);
+    done();
+  });
+
+  it('parses a map of maps', function(done) {
+    const content = `
+      const map<string, map<string,string>> test = {'foo': {'hello': 'world'}}
+    `;
+
+    const expected = {
+      const: {
+        test: {
+          type: {
+            name: 'map',
+            keyType: 'string',
+            valueType: {
+              name: 'map',
+              keyType: 'string',
+              valueType: 'string'
+            }
+          },
+          value: [
+            {
+              key: 'foo',
+              value: [
+                {
+                  key: 'hello',
+                  value: 'world'
+                }
+              ]
+            }
+          ]
+        }
+      }
+    };
+
+    const ast = thriftParser(content);
+
+    expect(ast).toEqual(expected);
+    done();
+  });
+
+  it('parses a list of sets of maps', function(done) {
+    const content = `
+      const list<set<map<string,string>>> test = [[{'hello': 'world'}, {'foo': 'bar'}]]
+    `;
+
+    const expected = {
+      const: {
+        test: {
+          type: {
+            name: 'list',
+            valueType: {
+              name: 'set',
+              valueType: {
+                name: 'map',
+                keyType: 'string',
+                valueType: 'string'
+              }
+            }
+          },
+          value: [
+            [
+              [
+                {
+                  key: 'hello',
+                  value: 'world'
+                }
+              ],
+              [
+                {
+                  key: 'foo',
+                  value: 'bar'
+                }
+              ]
+            ]
+          ]
+        }
+      }
+    };
+
+    const ast = thriftParser(content);
+
+    expect(ast).toEqual(expected);
     done();
   });
 });

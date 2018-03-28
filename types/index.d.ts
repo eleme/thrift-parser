@@ -50,7 +50,9 @@ type Exceptions = {
 
 type Services = {
   [serviceName: string]: {
-    [methodName: string]: Method,
+    functions: {
+      [methodName: string]: Method,
+    },
   },
 }
 
